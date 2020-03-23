@@ -1,0 +1,1 @@
+C:\Users\anshc\OneDrive\Documents\535\SVANN\sciter-sdk-master\bin.win\packfolder.exe res resources.cpp -v "resources"
