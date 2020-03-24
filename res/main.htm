@@ -7,10 +7,10 @@
     <body>
 
         <!-- Outter four divs split window up into columns -->
-        <!-- We need an overall div wrapper to get this to work-->
-        <div class="outerMostWrapper">
+        <!-- We will use a table to do this -->
+        <table class="outerTable"><tr>
             <!-- INSTRUCTIONS COLUMN -->
-            <div id="instructions" class="outerColumn">
+            <td id="instructions" class="outerColumn">
                 <b>INSTRUCTIONS</b><br><br>
 
                 World War II (often abbreviated to WWII or WW2), also known as the Second World War, was a global war that lasted from 1939 to 1945. The vast majority of the world's countries—including all the great powers—eventually formed two opposing military alliances: the Allies and the Axis. A state of total war emerged, directly involving more than 100 million people from more than 30 countries. The major participants threw their entire economic, industrial, and scientific capabilities behind the war effort, blurring the distinction between civilian and military resources. World War II was the deadliest conflict in human history, marked by 70 to 85 million fatalities, most of whom were civilians in the Soviet Union and China. It included massacres, genocides including the Holocaust, strategic bombing, premeditated death from starvation and disease, and the only use of nuclear weapons in war.
@@ -22,13 +22,13 @@
                 The war in Europe concluded with an invasion of Germany by the Western Allies and the Soviet Union, culminating in the capture of Berlin by Soviet troops, the suicide of Adolf Hitler and the German unconditional surrender on 8 May 1945. Following the Potsdam Declaration by the Allies on 26 July 1945 and the refusal of Japan to surrender under its terms, the United States dropped atomic bombs on the Japanese cities of Hiroshima and Nagasaki on 6 and 9 August respectively. With an invasion of the Japanese archipelago imminent, the possibility of additional atomic bombings, the Soviet entry into the war against Japan and its invasion of Manchuria, Japan announced its intention to surrender on 15 August 1945, cementing total victory in Asia for the Allies. Tribunals were set up by the Allies, and war crimes trials were conducted in the wake of the war both against the Germans and against the Japanese.
 
                 World War II changed the political alignment and social structure of the globe. The United Nations (UN) was established to foster international co-operation and prevent future conflicts; the victorious great powers—China, France, the Soviet Union, the United Kingdom, and the United States—became the permanent members of its Security Council. The Soviet Union and United States emerged as rival superpowers, setting the stage for the nearly half-century long Cold War. In the wake of European devastation, the influence of its great powers waned, triggering the decolonisation of Africa and Asia. Most countries whose industries had been damaged moved towards economic recovery and expansion. Political integration, especially in Europe, emerged as an effort to end pre-war enmities and create a common identity.
-            </div>
+            </td>
 
             <!-- REGISTERS COLUMN -->
-            <div id="registers" class="outerColumn"><b>REGISTERS</b></div>
+            <td id="registers" class="outerColumn"><b>REGISTERS</b></td>
 
             <!-- MEMORY COLUMN -->
-            <div id="memory" class="outerColumn">
+            <td id="memory" class="outerColumn">
                 <!-- The memory column is split horizontally into lower level memory and the cache -->
                 <!-- LOWER MEMORY ROW -->
                 <div id="lowerMem" class="memoryRow"><b>LOWER MEMORY</b></div>
@@ -36,11 +36,11 @@
                 <!-- CACHE ROW -->
                 <div id="cache" class="memoryRow"><b>CACHE</b></div>
 
-            </div>
+            </td>
 
             <!-- MEMORY COLUMN -->
-            <div id="contrlPnl" class="outerColumn"><b>CONTROL PANEL</b></div>
+            <td id="contrlPnl" class="outerColumn"><b>CONTROL PANEL</b></td>
 
-        </div>
+        </tr></table>
     </body>
 </html>
