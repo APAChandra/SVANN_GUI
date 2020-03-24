@@ -1,0 +1,16 @@
+﻿html, body {
+    height: 100%;
+}
+
+.outerMostWrapper {
+    height: 100vh;
+    width: 95%;
+    display: flex;
+}
+
+#instructions, #registers, #memory, #contrlPnl {
+    height: 100vh;
+    width: 25%;
+    float: left;
+    overflow-y: scroll;
+}

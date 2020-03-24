@@ -28,7 +28,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sciter-sdk-master\demos.win\sciter-dx\stdafx.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
