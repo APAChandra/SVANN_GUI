@@ -1,1 +1,47 @@
-self#cache.text = self#cache.text.concat(view.nativeMessage());
+// POPULATE CACHE ///////////////////////////////////////////////////////
+// grab all cachelines from cache as string
+// cache data comes in as .... abcd ....
+// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
+var cacheStr = view.grabDataFrom_Cache();
+
+// convert cache string into array
+var cacheArr = cacheStr.split(' ');
+
+// add in each line to cache UI with a break character
+for (var i = 0; i < cacheArr.length; i++){
+	self#cache.$append(<br>{cacheArr[i]});
+}
+
+// POPULATE DRAM ///////////////////////////////////////////////////////
+// grab all DRAM lines from DRAM as string
+// cache data comes in as .... abcd ....
+// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
+var dramStr = view.grabDataFrom_DRAM();
+
+// convert cache string into array
+var dramArr = dramStr.split(' ');
+
+// add in each line to cache UI with a break character
+// first set text to the empty string since we are repopulating the whole thing
+self#DRAM.text = "";
+self#DRAM.$append(<b>DRAM</b>);
+for (var i = 0; i < dramArr.length; i++){
+	self#DRAM.$append(<br>{dramArr[i]});
+}
+
+// POPULATE REGISTERS ///////////////////////////////////////////////////////
+// grab all DRAM lines from DRAM as string
+// cache data comes in as .... abcd ....
+// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
+var regStr = view.grabDataFrom_Registers();
+
+// convert cache string into array
+var regArr = regStr.split(' ');
+
+// add in each line to cache UI with a break character
+// first set text to the empty string since we are repopulating the whole thing
+self#registers.text = "";
+self#registers.$append(<b>Registers</b>);
+for (var i = 0; i < regArr.length; i++){
+	self#registers.$append(<br>{regArr[i]});
+}

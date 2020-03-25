@@ -8,5 +8,5 @@
 .memoryRow {
     height: 48vh;
     overflow-y: scroll;
-    prototype: 
+    word-wrap: break-word;
 }

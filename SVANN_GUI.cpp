@@ -9,6 +9,7 @@
 #include "memory.h"
 
 #include "sciter-x-window.hpp"
+#include "value.hpp"
 
 class frame : public sciter::window {
 public:
@@ -19,20 +20,51 @@ public:
 
     // map of native functions exposed to script:
     BEGIN_FUNCTION_MAP
-        FUNCTION_0("nativeMessage", nativeMessage);
+        FUNCTION_0("grabDataFrom_Cache", grabDataFrom_Cache);
+        FUNCTION_0("grabDataFrom_DRAM", grabDataFrom_DRAM);
+        FUNCTION_0("grabDataFrom_Registers", grabDataFrom_Registers);
     END_FUNCTION_MAP
 
     // function expsed to script:
-    sciter::string  nativeMessage() {
-        string s = "0001 0001 0001";
-        long long int addr = stoll(s.substr(4, 4));
-        int reg = stoi(s.substr(9, 2));
-        string address = memTest.decToBinary(addr);
-        int set = stoi(address.substr(58, 4), 0, 2);
+    sciter::string grabDataFrom_Cache() {
+        
+        // all words from cache and place them in a string
+        // return the string to .tis and create array based on delimeters
+        sciter::string cacheStr = WSTR("");
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 4; j++) {
+                for (int k = 0; k < 4; k++) {
+                    cacheStr += to_wstring(memTest.cache[i][j].word[k]);
+                };
+                cacheStr += WSTR(" ");
+            }
+        }
 
-        sciter::string returnVal = to_wstring(memTest.registers[reg]);
+        return cacheStr;
+    }
 
-        return returnVal;
+    sciter::string grabDataFrom_DRAM() {
+
+        // all words from cache and place them in a string
+        // return the string to .tis and create array based on delimeters
+        sciter::string dramStr = WSTR("");
+        for (int i = 0; i < 256; i++) {
+            dramStr += to_wstring(memTest.DRAM[i]) + WSTR(" ");
+        }
+
+        return dramStr;
+    }
+
+    sciter::string grabDataFrom_Registers() {
+
+        // all words from cache and place them in a string
+        // return the string to .tis and create array based on delimeters
+        sciter::string regStr = WSTR("");
+        for (int i = 0; i < 64; i++) {
+            regStr += to_wstring(memTest.registers[i]) + WSTR(" ");
+        }
+
+        return regStr;
     }
 };
 

@@ -154,6 +154,7 @@
     <ClInclude Include="memory.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="sciter-sdk-master\demos.win\sciter-dx\stdafx.h" />
+    <ClInclude Include="sciter-sdk-master\include\value.hpp" />
     <ClInclude Include="SVANN_GUI.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
