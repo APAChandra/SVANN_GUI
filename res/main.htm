@@ -1,8 +1,9 @@
 <html>
     <head>
-        <title>Test</title>
+        <title>SVANN</title>
         <link rel="stylesheet" href="main.css" type="text/css">
-        <script type="text/tiscript"></script>
+        <script src="main.tis" type="text/tiscript"></script>
+     
     </head>
     <body>
 
@@ -31,7 +32,20 @@
             <td id="memory" class="outerColumn">
                 <!-- The memory column is split horizontally into lower level memory and the cache -->
                 <!-- LOWER MEMORY ROW -->
-                <div id="lowerMem" class="memoryRow"><b>LOWER MEMORY</b></div>
+                <div id="lowerMem" class="memoryRow">
+                    <b>LOWER MEMORY</b><br><br>
+
+                    The minimum colouring problem asks for the smallest k to properly colour G. The k-colouring problem asks whether G can be properly coloured using at most k colours.
+                    We call the subset of vertices that receive the same colour a colour class. It is easy to see that every colour
+                    class is an independent set (yeah?). Notice that we’ve encountered the colouring problem before! Recall in
+                    Assignment 1, we wanted to send the minimum number of journalists to cover all the world cup games. Well
+                    the subset of games a journalist got is a colour class! We were able to solve this optimization problem in
+                    O(|V | log |V |) time, so how can we claim that the k-colouring decision problem is NP-complete?
+                    It is the same reasoning for the Independent Set problem. One way to deal with NP-completeness is to
+                    restrict the problem to subsets of the input (in this assignment, we restricted “arbitrary” graphs to interval
+                    graphs). In this lecture we will show that the colouring problem on arbitrary graphs becomes NP-complete
+                    even for k = 3 ! Crazy
+                </div>
 
                 <!-- CACHE ROW -->
                 <div id="cache" class="memoryRow"><b>CACHE</b></div>

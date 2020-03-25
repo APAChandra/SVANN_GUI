@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="memory.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="sciter-sdk-master\demos.win\sciter-dx\stdafx.h" />
     <ClInclude Include="SVANN_GUI.h" />

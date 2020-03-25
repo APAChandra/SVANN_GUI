@@ -1,6 +1,12 @@
-﻿td {
+﻿.outerColumn {
     vertical-align: top;
     height: 96vh;
     width: 25%;
     overflow-y: scroll;
+}
+
+.memoryRow {
+    height: 48vh;
+    overflow-y: scroll;
+    prototype: 
 }

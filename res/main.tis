@@ -1,0 +1,1 @@
+self#cache.text = self#cache.text.concat(view.nativeMessage());
