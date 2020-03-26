@@ -1,12 +1,26 @@
-﻿.outerColumn {
+﻿table{
+    width: 98vw;
+}
+
+#instrctnsCell, #regsCell, #contrlPnlCell {
     vertical-align: top;
-    height: 96vh;
-    width: 25%;
+    height: 92vh;
     overflow-y: scroll;
 }
 
+#dramCell, #cacheCell {
+    vertical-align: top;
+    height: 35vh;
+    overflow-y: scroll;
+}
+
+.cntntCell {
+    width: 25%;
+}
+
+/*
 .memoryRow {
     height: 48vh;
     overflow-y: scroll;
     word-wrap: break-word;
-}
+}*/
