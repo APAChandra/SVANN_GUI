@@ -36,6 +36,12 @@
     <ClInclude Include="sciter-sdk-master\include\value.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\AppData\Local\Programs\Python\Python37\include\Python.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sciter-sdk-master\include\aux-cvt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SVANN_GUI.cpp">
@@ -57,5 +63,17 @@
     <Image Include="SVANN_GUI.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="instructionsTest.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\PycharmProjects\535Assembler\venv\535Assembler.py" />
+    <None Include="..\..\..\AppData\Local\Programs\Python\Python37\python37_d.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\AppData\Local\Programs\Python\Python37\libs\python37_d.lib" />
   </ItemGroup>
 </Project>

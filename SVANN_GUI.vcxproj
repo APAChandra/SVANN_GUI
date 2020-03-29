@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Chase's Laptop\source\repos\SVANN_GUI\sciter-sdk-master\demos.win\sciter-dx;C:\Users\Chase's Laptop\source\repos\SVANN_GUI\sciter-sdk-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Chase's Laptop\AppData\Local\Programs\Python\Python37;C:\Users\Chase's Laptop\AppData\Local\Programs\Python\Python37\include;C:\Users\Chase's Laptop\AppData\Local\Programs\Python\Python37\libs;C:\Users\Chase's Laptop\source\repos\SVANN_GUI\sciter-sdk-master\demos.win\sciter-dx;C:\Users\Chase's Laptop\source\repos\SVANN_GUI\sciter-sdk-master\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,7 +140,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Chase's Laptop\source\repos\SVANN_GUI\sciter-sdk-master\demos.win\sciter-dx;C:\Users\Chase's Laptop\source\repos\SVANN_GUI\sciter-sdk-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Chase's Laptop\AppData\Local\Programs\Python\Python37;C:\Users\Chase's Laptop\AppData\Local\Programs\Python\Python37\include;C:\Users\Chase's Laptop\AppData\Local\Programs\Python\Python37\libs;C:\Users\Chase's Laptop\source\repos\SVANN_GUI\sciter-sdk-master\demos.win\sciter-dx;C:\Users\Chase's Laptop\source\repos\SVANN_GUI\sciter-sdk-master\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,10 +150,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\AppData\Local\Programs\Python\Python37\include\Python.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="sciter-sdk-master\demos.win\sciter-dx\stdafx.h" />
+    <ClInclude Include="sciter-sdk-master\include\aux-cvt.h" />
     <ClInclude Include="sciter-sdk-master\include\value.hpp" />
     <ClInclude Include="SVANN_GUI.h" />
     <ClInclude Include="targetver.h" />
@@ -168,6 +170,16 @@
   <ItemGroup>
     <Image Include="small.ico" />
     <Image Include="SVANN_GUI.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="instructionsTest.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\AppData\Local\Programs\Python\Python37\python37_d.dll" />
+    <None Include="..\..\..\PycharmProjects\535Assembler\venv\535Assembler.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\..\AppData\Local\Programs\Python\Python37\libs\python37_d.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

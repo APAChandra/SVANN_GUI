@@ -4,9 +4,16 @@
 // LAST EDITED BY CHASE ON 3/25
 // --> DOING: passing data from memory.h to main.tis
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "stdafx.h"
 #include "SVANN_GUI.h"
 #include "memory.h"
+#include <Python.h>
+#include <stdio.h>
+#include <locale>
+#include <codecvt>
+#include <string>
 
 #include "sciter-x-window.hpp"
 #include "value.hpp"
@@ -23,9 +30,9 @@ public:
         FUNCTION_0("grabDataFrom_Cache", grabDataFrom_Cache);
         FUNCTION_0("grabDataFrom_DRAM", grabDataFrom_DRAM);
         FUNCTION_0("grabDataFrom_Registers", grabDataFrom_Registers);
+        FUNCTION_1("uploadFileEvent", uploadFileEvent);
     END_FUNCTION_MAP
 
-    // function expsed to script:
     sciter::string grabDataFrom_Cache() {
         
         // all words from cache and place them in a string
@@ -65,6 +72,52 @@ public:
         }
 
         return regStr;
+    }
+
+    // This function is NOT optimized
+    sciter::string uploadFileEvent(sciter::value fileName)
+    {
+        
+
+        // READ INSTRUCTIONS FILE ONCE FOR RETURN TO TIS SCRIPT
+        sciter::string fileNameStr = fileName.get(L""); // convert value to string
+        sciter::string allInstructions = WSTR("");
+        sciter::string instructionLine;
+        std::wifstream instructionsFile(fileNameStr);
+        if (instructionsFile.is_open()){
+            while (getline(instructionsFile, instructionLine)){
+                allInstructions += instructionLine + WSTR("-");
+            }
+            instructionsFile.close();
+        }
+
+        // CALL PYTHON SCRIPT TO READ INSTRUCTIONS FILE AND WRITE CONVERTED BINARY FILE
+        const char* stdFileStr = aux::w2a(fileNameStr);
+
+        FILE* file;
+        int argc;
+        const char* argv[3];
+
+        argc = 2;
+        argv[0] = WSTR("535Assembler.py");
+        argv[1] = fileNameStr;
+
+        Py_SetProgramName(WSTR("535Assembler.py"));
+        Py_Initialize();
+        PySys_SetArgv(2, {WSTR("535Assembler.py"), fileNameStr});
+        file = fopen("mypy.py", "r");
+        PyRun_SimpleFile(file, "mypy.py");
+        Py_Finalize();
+
+
+        char filename[] = "535Assembler.py";
+        FILE* fp;
+        Py_Initialize();
+        fp = _Py_fopen(filename, "r");
+        PyRun_SimpleFile(fp, filename);
+        Py_Finalize();
+
+        return allInstructions;
     }
 };
 
