@@ -12,6 +12,7 @@
     vertical-align: top;
     height: 35vh;
     overflow-y: scroll;
+    overflow-x: scroll;
 }
 
 .cntntCell {

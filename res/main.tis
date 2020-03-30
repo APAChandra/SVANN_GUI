@@ -40,20 +40,9 @@ function refreshDram(){
 	
 	// add in each line to cache UI with a break character
 	for (var i = 0; i < dramArr.length; i++){
-		if (dramArr[i].substr(dramArr[i].length-1,dramArr[i].length) !== undefined){
-			self#dramCell.$append(<br>{dramArr[i]});
-		self#dramCell.$append(<br>{dramArr[i].substr(0,9).toInteger(69,10) * 10 ^ (dramArr[i].length-9)});
-			self#dramCell.$append(<br>{"1234567890".toInteger(69,10)});
-			
-		} else {
-			self#dramCell.$append(<br>undef);
-		}
-			//self#dramCell.$append(<br>{dramArr[i].toInteger(16)});
-			self#dramCell.$append(<br>i:{i});
-		//} else {
-			//self#dramCell.$append(<br>undef);
-		//}
+		self#dramCell.$append(<br>{dramArr[i]});
 	}
+	
 	
 	numDramClicks++;
 }

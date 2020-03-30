@@ -56,7 +56,15 @@ public:
         // return the string to .tis and create array based on delimeters
         sciter::string dramStr = WSTR("");
         for (int i = 0; i < 256; i++) {
-            dramStr += to_wstring(memTest.DRAM[i]) + WSTR(" ");
+            // convert binary long long int to wstring
+            wstring str(64, '0');
+            for (int j = 0; j < 64; j++)
+            {
+                if ((1ll << j) & memTest.DRAM[i])
+                    str[63 - j] = '1';
+            }
+
+            dramStr += str + WSTR(" ");
         }
 
         return dramStr;
