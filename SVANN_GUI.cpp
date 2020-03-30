@@ -9,11 +9,11 @@
 #include "stdafx.h"
 #include "SVANN_GUI.h"
 #include "memory.h"
-#include <Python.h>
-#include <stdio.h>
-#include <locale>
-#include <codecvt>
+#include "aux-cvt.h"
+#include <stdlib.h>
 #include <string>
+#include "Python.h"
+#include "stdio.h"
 
 #include "sciter-x-window.hpp"
 #include "value.hpp"
@@ -30,7 +30,7 @@ public:
         FUNCTION_0("grabDataFrom_Cache", grabDataFrom_Cache);
         FUNCTION_0("grabDataFrom_DRAM", grabDataFrom_DRAM);
         FUNCTION_0("grabDataFrom_Registers", grabDataFrom_Registers);
-        FUNCTION_1("uploadFileEvent", uploadFileEvent);
+        FUNCTION_1("uploadInstructionsFile", uploadInstructionsFile);
     END_FUNCTION_MAP
 
     sciter::string grabDataFrom_Cache() {
@@ -74,16 +74,22 @@ public:
         return regStr;
     }
 
-    // This function is NOT optimized
-    sciter::string uploadFileEvent(sciter::value fileName)
+    // UPLOAD INSTRUCTIONS FILE
+    // In: sciter::value file name of .txt instructions file to open
+    //       - .txt file assumed to sit in source files folder
+    // Out: sciter::string concatenation of all instructions, delimited by character '-'
+    //       - sciter seems to require strings be passed using their sciter:: type
+    // uploadInstructionsFile's purpose is to read an instruction file and do two things:
+    //       - write the instructions in binary as ints to the memory.DRAM array
+    //       - return the instructions in assembly as one big string so the UI can display them
+    // This function is not optimized AT ALL. I had heck of a time dealing with strings.
+    sciter::string uploadInstructionsFile(sciter::value fileName)
     {
-        
-
-        // READ INSTRUCTIONS FILE ONCE FOR RETURN TO TIS SCRIPT
-        sciter::string fileNameStr = fileName.get(L""); // convert value to string
-        sciter::string allInstructions = WSTR("");
+        // Open file and read all instructions into one big sciter::string
+        sciter::string fileNameWStr = fileName.get(L""); // convert value to string
+        sciter::string allInstructions = WSTR(""); // this is what gets returned to the TIS script
         sciter::string instructionLine;
-        std::wifstream instructionsFile(fileNameStr);
+        std::wifstream instructionsFile(fileNameWStr);
         if (instructionsFile.is_open()){
             while (getline(instructionsFile, instructionLine)){
                 allInstructions += instructionLine + WSTR("-");
@@ -91,41 +97,79 @@ public:
             instructionsFile.close();
         }
 
-        // CALL PYTHON SCRIPT TO READ INSTRUCTIONS FILE AND WRITE CONVERTED BINARY FILE
-        const char* stdFileStr = aux::w2a(fileNameStr);
+        // CONVERT INSTRUCTIONS TO BINARY AND WRITE THEM TO DRAM OBJECT
+        // first convert the fileName sciter::string to a std::string
+        // I KNOW THIS IS NOT THE RIGHT WAY TO DO THIS
+        // But I couldn't figure out any other way to convert a sciter::value all the way to a std::string...
 
-        FILE* file;
-        int argc;
-        const char* argv[3];
+        // Write to file and read it back 
+        wofstream myWFile;
+        myWFile.open("instrsTemp.txt");
+        myWFile << fileNameWStr;
+        myWFile.close();
 
-        argc = 2;
-        argv[0] = WSTR("535Assembler.py");
-        argv[1] = fileNameStr;
+        // Open file and read fileName back as std::string
+        std::string stdFileName = "";
+        std::string stdLine;
+        ifstream mySFile("instrsTemp.txt");
+        if (mySFile.is_open())
+        {
+            while (getline(mySFile, stdLine))
+            {
+                stdFileName = stdLine; // done! ... sort of.
+            }
+            mySFile.close();
+        }
 
-        Py_SetProgramName(WSTR("535Assembler.py"));
-        Py_Initialize();
-        PySys_SetArgv(2, {WSTR("535Assembler.py"), fileNameStr});
-        file = fopen("mypy.py", "r");
-        PyRun_SimpleFile(file, "mypy.py");
-        Py_Finalize();
+        // Call Python script that will write binary instructions file
+        //      - This temporary variable is apparently extremely important!
+        //      - without it C++ will throw an error on the sysCall declaration
+        std::string tmp = stdFileName;
+        std::string sysCall = "python 535Assembler.py" + stdFileName;
+        system("python 535Assembler.py instructionsTest.txt");
 
+        // read binary instructions file and place instructions in DRAM
+        std::string binInstrs = "";
+        std::string assemInsrLine;
+        std::string tmp1 = stdFileName;
+        std::string binInstrFileName = stdFileName.substr(0, stdFileName.length() - 4) + "Binary.txt";
+        ifstream binInstrFile(binInstrFileName);
+        int i = 0;
+        if (binInstrFile.is_open())
+        {
+            while (getline(binInstrFile, assemInsrLine))
+            {
+                if (assemInsrLine.compare("") != 0) {
+                    memTest.DRAM[i] = stoll(assemInsrLine, 0 ,2);
+                    i++;
+                }
+            }
+            binInstrFile.close();
+        }
 
-        char filename[] = "535Assembler.py";
-        FILE* fp;
-        Py_Initialize();
-        fp = _Py_fopen(filename, "r");
-        PyRun_SimpleFile(fp, filename);
-        Py_Finalize();
 
         return allInstructions;
     }
+
+    /*
+    std::string passingStdStrngs(sciter::value mySciterVal) {
+        std::wstring string_to_convert = mySciterVal.get(L"");
+
+
+        std::wstring_convert< std::codecvt_utf8<wchar_t>, wchar_t > cvt;
+        std:string narrow = cvt.to_bytes(string_to_convert);
+
+        return narrow;
+    }
+    */
+    
 };
 
 #include "resources.cpp"
 
 int uimain(std::function<int()> run) {
 
-    //sciter::debug_output_console console; - uncomment it if you will need console window
+    sciter::debug_output_console console;// - uncomment it if you will need console window
 
     sciter::archive::instance().open(aux::elements_of(resources)); // bind resources[] (defined in "resources.cpp") with the archive
 

@@ -39,9 +39,20 @@ function refreshDram(){
 	}
 	
 	// add in each line to cache UI with a break character
-	// first set text to the empty string since we are repopulating the whole thing
 	for (var i = 0; i < dramArr.length; i++){
-		self#dramCell.$append(<br>{dramArr[i]});
+		if (dramArr[i].substr(dramArr[i].length-1,dramArr[i].length) !== undefined){
+			self#dramCell.$append(<br>{dramArr[i]});
+		self#dramCell.$append(<br>{dramArr[i].substr(0,9).toInteger(69,10) * 10 ^ (dramArr[i].length-9)});
+			self#dramCell.$append(<br>{"1234567890".toInteger(69,10)});
+			
+		} else {
+			self#dramCell.$append(<br>undef);
+		}
+			//self#dramCell.$append(<br>{dramArr[i].toInteger(16)});
+			self#dramCell.$append(<br>i:{i});
+		//} else {
+			//self#dramCell.$append(<br>undef);
+		//}
 	}
 	
 	numDramClicks++;
@@ -93,7 +104,7 @@ var retVal = uploadFileBtn.on("click", view.uploadFileEvent("bob vageen"));
 
 $(button#uploadFileBtn).onClick = function(){
   var el = this; // $(mybutton) passed as this to its handlers
-  var allInstructions = view.uploadFileEvent(self#filePathField.text); // pass some attributes and value
+  var allInstructions = view.uploadInstructionsFile("instructionsTest.txt"); // pass some attributes and value
   if (allInstructions === ""){
 	  self#instrctnsCell.text = "Something went wrong... double check your file name";
   } else {
@@ -106,3 +117,11 @@ $(button#uploadFileBtn).onClick = function(){
   }
   	
 }
+
+/*
+$(button#uploadFileBtn).onClick = function(){
+  var el = this; // $(mybutton) passed as this to its handlers
+  var testStr = view.passingStdStrngs(self#filePathField.text); // pass some attributes and value
+  
+  self#instrctnsCell.$append({testStr});
+}*/
