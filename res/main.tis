@@ -86,13 +86,8 @@ dramRefrshBtn.on("click", refreshDram);
 var cacheRefrshBtn = $(button#cacheRefrshBtn);
 cacheRefrshBtn.on("click", refreshCache);
 
-/*
-var uploadFileBtn = $(button#uploadFileBtn);
-var retVal = uploadFileBtn.on("click", view.uploadFileEvent("bob vageen"));
-*/
 
-$(button#uploadFileBtn).onClick = function(){
-  var el = this; // $(mybutton) passed as this to its handlers
+$(button#uploadInstrBtn).onClick = function(){
   var allInstructions = view.uploadInstructionsFile("instructionsTest.txt"); // pass some attributes and value
   if (allInstructions === ""){
 	  self#instrctnsCell.text = "Something went wrong... double check your file name";
@@ -101,16 +96,8 @@ $(button#uploadFileBtn).onClick = function(){
 	  var instrctnsArr = allInstructions.split('-');
 	  self#instrctnsCell.text = "";
 	  for (var i = 0; i < instrctnsArr.length; i++){
-		self#instrctnsCell.$append(<br>{instrctnsArr[i]});
+		self#instrctnsCell.$append({instrctnsArr[i]}<br>);
 	  }
   }
   	
 }
-
-/*
-$(button#uploadFileBtn).onClick = function(){
-  var el = this; // $(mybutton) passed as this to its handlers
-  var testStr = view.passingStdStrngs(self#filePathField.text); // pass some attributes and value
-  
-  self#instrctnsCell.$append({testStr});
-}*/

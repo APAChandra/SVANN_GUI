@@ -18,37 +18,35 @@
         <!-- Second Row of Table: instructions, registers, DRAM, and Control Panel -->
         <tr>
             <!-- INSTRUCTIONS CELL -->
-            <td id="instrctnsCell" class="cntntCell" rowspan="3">
-                INSTRUCTIONS<br />
-                CONTENT
-            </td>
+            <td id="instrctnsCell" class="cntntCell" rowspan="3">content</td>
 
             <!-- REGISTERS CELL -->
-            <td id="regsCell" class="cntntCell" rowspan="3">
-                REGISTERS<br />
-                CONTENT
-            </td>
+            <td id="regsCell" class="cntntCell" rowspan="3"></td>
 
             <!-- DRAM CELL -->
-            <td id="dramCell" class="cntntCell">
-                DRAM<br />
-                CONTENT
-            </td>
+            <td id="dramCell" class="cntntCell"></td>
 
             <!-- CONTROL PANEL CELL -->
             <td id="contrlPnlCell" class="cntntCell" rowspan="3">
-                CONTROL<br />
-                PANEL<br />
-                CONTENT<br />
-                <br />
-
                 <button type="button" id="regsRefrshBtn">Refresh Registers</button><br />
                 <button type="button" id="dramRefrshBtn">Refresh DRAM</button><br />
                 <button type="button" id="cacheRefrshBtn">Refresh Cache</button><br />
+                <br />
+                <br />
 
                 <label for="filePathField">Enter an instructions file name:</label><br><br>
                 <input type="text" id="filePathField"><br />
-                <button type="button" id="uploadFileBtn">Upload Instructions File</button>
+                <button type="button" id="uploadInstrBtn">Upload Instructions File</button><br />
+                <br />
+
+                <button type="button" id="saveProgState">Save Current Program State</button><br />
+                <br />
+
+                <label for="filePathField">Enter a program state file name:</label><br><br>
+                <input type="text" id="progrStateUpload"><br />
+                <button type="button" id="uploadProgStateBtn">Upload Program State File</button>
+
+
             </td>
         </tr>
 
@@ -59,10 +57,7 @@
 
         <!-- Fourth Row of Table: Cache Cell -->
         <tr>
-            <td id="cacheCell" class="cntntCell">
-                CACHE<br />
-                CONTENT
-            </td>
+            <td id="cacheCell" class="cntntCell"></td>
         </tr>
 
     </table>
