@@ -45,7 +45,7 @@ public:
 	pipeline(memory in) {
 		mem = in;
 		Imm = 0;
-		IR = 0;
+		IR = 0LL;
 		ALUo = 0;
 		A = 0;
 		B = 0;
@@ -55,7 +55,7 @@ public:
 			regHaz[i] = false;
 		}
 		for (int i = 0; i < 5; i++) {
-			FUstate[i] = true; c
+			FUstate[i] = true;
 				reg[i] = 0;
 		}
 	}
@@ -69,9 +69,10 @@ public:
 	171 is represented as 0101011 in binary,
 	so, you should get only 10101 i.e. 21.*/
 
-	int bitExtracted(long long int number, int k, int p)
+	int bitExtracted(long long int number, int p, int k)
 	{
-		k = k + 1;
+		p = p + 1;
+
 		return (((1 << k) - 1) & (number >> (p - 1)));
 	}
 
@@ -158,8 +159,6 @@ public:
 					default:
 						break;
 					}
-				default:
-					break;
 				}
 			}
 			else if (type == 1) {
@@ -282,7 +281,6 @@ public:
 
 			next = 0;
 		}
-
 	}
 
 	void runPipeline(int startAddr, int endAddr) {
@@ -310,6 +308,10 @@ public:
 		}
 	}
 
-
+	void runWithoutPipeLine(int startAddr, int endAddr) {
+		for (int i = startAddr; i < endAddr; i++) {
+			runPipeline(i, i);
+		}
+	}
 
 };

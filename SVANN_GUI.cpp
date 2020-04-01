@@ -251,6 +251,10 @@ public:
         // for demo, manually fill instructions in DRAM (shh...)
         int x = 0;
         if (fileNameWStr.compare(WSTR("demoInstructions.txt")) == 0) {
+            memTest.DRAM[230] = 0;
+            memTest.DRAM[231] = 5;
+            memTest.DRAM[232] = 40;
+            memTest.DRAM[233] = 1;
             memTest.DRAM[0] = 0b0010001110001010000000000000000000000000000000000000000011100110; //R5 = 0
             memTest.DRAM[1] = 0b0010001110001100000000000000000000000000000000000000000011100111; //R6 = 5
             memTest.DRAM[2] = 0b0010001110010100000000000000000000000000000000000000000011101000; //R10 = 40
