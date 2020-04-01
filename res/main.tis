@@ -17,7 +17,7 @@ function refreshRegs (){
 	// add in each line to cache UI with a break character
 	// first set text to the empty string since we are repopulating the whole thing
 	for (var i = 0; i < regArr.length; i++){
-		self#regsCell.$append(<br>{regArr[i]});
+		self#regsCell.$append({regArr[i]}<br>);
 	}
 	
 	numRegClicks++;
@@ -36,11 +36,12 @@ function refreshDram(){
 	// button click testing
 	if (numDramClicks > 0){
 		self#dramCell.text = "number of times refreshed: ".concat(numDramClicks.toString());
+		self#dramCell.$append(<br>);
 	}
 	
 	// add in each line to cache UI with a break character
 	for (var i = 0; i < dramArr.length; i++){
-		self#dramCell.$append(<br>{dramArr[i]});
+		self#dramCell.$append({dramArr[i]}<br>);
 	}
 	
 	
@@ -64,7 +65,7 @@ function refreshCache(){
 
 	// add in each line to cache UI with a break character
 	for (var i = 0; i < cacheArr.length; i++){
-		self#cacheCell.$append(<br>{cacheArr[i]});
+		
 	}
 	
 	numCacheClicks++;
@@ -86,7 +87,6 @@ dramRefrshBtn.on("click", refreshDram);
 var cacheRefrshBtn = $(button#cacheRefrshBtn);
 cacheRefrshBtn.on("click", refreshCache);
 
-
 $(button#uploadInstrBtn).onClick = function(){
   var allInstructions = view.uploadInstructionsFile("instructionsTest.txt"); // pass some attributes and value
   if (allInstructions === ""){
@@ -98,6 +98,13 @@ $(button#uploadInstrBtn).onClick = function(){
 	  for (var i = 0; i < instrctnsArr.length; i++){
 		self#instrctnsCell.$append({instrctnsArr[i]}<br>);
 	  }
-  }
-  	
-}
+  }	
+};
+
+$(button#saveProgStateBtn).onClick = function(){
+  var __ = view.saveProgState("progSaveTest.txt"); // return is junk right now
+};
+
+$(button#readInProgStateBtn).onClick = function(){
+  var __ = view.readInProgState("progSaveTestCopy.txt"); // return is junk right now
+};

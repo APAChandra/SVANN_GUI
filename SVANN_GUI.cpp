@@ -31,6 +31,8 @@ public:
         FUNCTION_0("grabDataFrom_DRAM", grabDataFrom_DRAM);
         FUNCTION_0("grabDataFrom_Registers", grabDataFrom_Registers);
         FUNCTION_1("uploadInstructionsFile", uploadInstructionsFile);
+        FUNCTION_1("saveProgState", saveProgState);
+        FUNCTION_1("readInProgState", readInProgState);
     END_FUNCTION_MAP
 
     sciter::string grabDataFrom_Cache() {
@@ -42,7 +44,7 @@ public:
             for (int j = 0; j < 4; j++) {
                 for (int k = 0; k < 4; k++) {
                     cacheStr += to_wstring(memTest.cache[i][j].word[k]);
-                };
+                }
                 cacheStr += WSTR(" ");
             }
         }
@@ -159,18 +161,109 @@ public:
         return allInstructions;
     }
 
-    /*
-    std::string passingStdStrngs(sciter::value mySciterVal) {
-        std::wstring string_to_convert = mySciterVal.get(L"");
+    sciter::string saveProgState(sciter::value fileName) {
+        sciter::string fileNameWStr = fileName.get(L""); // convert value to string
 
+        // Initialize program state stream and file
+        wofstream progStateFile;
+        progStateFile.open(fileNameWStr);
 
-        std::wstring_convert< std::codecvt_utf8<wchar_t>, wchar_t > cvt;
-        std:string narrow = cvt.to_bytes(string_to_convert);
+        // First serialize DRAM
+        for (int i = 0; i < 256; i++) {
+            progStateFile << memTest.DRAM[i] << "\n"; // stored as decimal values!
+        }
 
-        return narrow;
+        // Next serialize registers
+        for (int i = 0; i < 64; i++) {
+            progStateFile << memTest.registers[i] << "\n";
+        }
+
+        // Next serialize cache
+        for (int i = 0; i < 16; i++){  // there are 16 cache sets
+            for (int j = 0; j < 4; j++) { // each set has four cachelines
+                progStateFile << "BEGINLINE_";
+                progStateFile << "INDEX_" << memTest.cache[i][j].index << "_LRU_" << memTest.cache[i][j].LRU << "_TAG_" << memTest.cache[i][j].tag << "_BEGIN_WORDS_";
+                for (int k = 0; k < 4; k++) { // and each cacheline contains four words
+                    progStateFile << "A" << memTest.cache[i][j].word[k] << "B";
+                }
+                progStateFile << "_ENDLINE_";
+            }
+            progStateFile << "\n";
+        }
+
+        // Everything in the memory object should now be serialized to that .txt file
+        progStateFile.close();
+
+        return fileNameWStr;
     }
-    */
-    
+
+    sciter::string readInProgState(sciter::value fileName) {
+        // convert sciter::value fileName to wstring
+        sciter::string fileNameWStr = fileName.get(L""); // convert value to string
+
+        // instantiate file reading objects
+        wstring progStateLine;
+        wifstream progStateFile(fileNameWStr);
+
+        if (progStateFile.is_open())
+        {
+            int i = 0; // line bookkeeper
+            while (getline(progStateFile, progStateLine)){
+                if (0 <= i && i < 256) { // First read in DRAM data
+                    memTest.DRAM[i] = stoll(progStateLine);
+                } else if (256 <= i && i < (256 + 64)) { // next read in register data
+                    memTest.registers[i - 256] = stoll(progStateLine);
+                } else if ((256 + 64) <= i && i < (256 + 64 + 16)) { // now read in cache data (16 cache sets)
+                    wstring cacheSet = progStateLine; // rename for readability
+                    
+                    for (int j = 0; j < 4; j++) { // four cachelines in each cache set
+                        // Read in index
+                        int indxPosStrt = cacheSet.find(WSTR("_INDEX_")) + 7;
+                        int indxPosLen = cacheSet.find(WSTR("_LRU_")) - indxPosStrt;
+                        int INDEX = stoi(cacheSet.substr(indxPosStrt, indxPosLen));
+                        memTest.cache[i - (256 + 64)][j].index = INDEX;
+
+                        // Read in LRU
+                        int lruPosStrt = cacheSet.find(WSTR("_LRU_")) + 5;
+                        int lruPosLen = (cacheSet.find(WSTR("_TAG_"))) - lruPosStrt;
+                        int LRU = stoi(cacheSet.substr(lruPosStrt, lruPosLen));
+                        memTest.cache[i - (256 + 64)][j].tag = LRU;
+
+                        // Read in LRU
+                        int tagPosStrt = cacheSet.find(WSTR("_TAG_")) + 5;
+                        int tagPosLen = cacheSet.find(WSTR("_BEGIN_WORDS_")) - tagPosStrt;
+                        long int TAG = stol(cacheSet.substr(tagPosStrt, tagPosLen));
+                        memTest.cache[i - (256 + 64)][j].tag = TAG;
+
+                        // Read in words
+                        int allWordsPosStrt = cacheSet.find(WSTR("_BEGIN_WORDS_")) + 13;
+                        int allWordsPosLen = cacheSet.find(WSTR("_ENDLINE_")) - allWordsPosStrt;
+                        wstring allWords = cacheSet.substr(allWordsPosStrt, allWordsPosLen);
+                        for (int k = 0; k < 4; k++) {
+                            // Read in single word
+                            int wordPosStrt = allWords.find(WSTR("A")) + 1;
+                            int wordPosLen = allWords.find(WSTR("B")) - wordPosStrt;
+                            long long int curWord = stoll(allWords.substr(wordPosStrt, wordPosLen));
+                            memTest.cache[i - (256 + 64)][j].word[k] = curWord;
+
+                            // chop off word we just read from allWords
+                            int newAllWordsSrt = allWords.find(WSTR("B")) + 1;
+                            int newAllWordsLen = allWords.length() - newAllWordsSrt;
+                            allWords = allWords.substr(newAllWordsSrt, newAllWordsLen);
+                        }
+                        // chop off cache line we just read from cacheSet
+                        int curCacheLineEndPos = cacheSet.find(WSTR("_ENDLINE_")) + 9;
+                        int restOfCacheSetLen = cacheSet.length() - curCacheLineEndPos;
+                        cacheSet = cacheSet.substr(curCacheLineEndPos, restOfCacheSetLen);
+                    }
+                }
+                i++; // don't forget to increment your variables, kids!
+            }
+            progStateFile.close();
+        }
+
+        return fileNameWStr;
+    }
 };
 
 #include "resources.cpp"

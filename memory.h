@@ -61,7 +61,10 @@ class memory {
 
             return dec_value;
         }
-    string GetHexFromBin(string sBinary)
+    
+        
+
+        string GetHexFromBin(string sBinary)
     {
         string rest("0x"),tmp,chr = "0000";
         int len = sBinary.length()/4;
