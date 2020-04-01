@@ -12,6 +12,7 @@ function refreshRegs (){
 	// button click testing
 	if (numRegClicks > 0){
 		self#regsCell.text = "number of times refreshed: ".concat(numRegClicks.toString());
+		self#regsCell.$append(<br>);
 	}
 	
 	// add in each line to cache UI with a break character
@@ -61,20 +62,31 @@ function refreshCache(){
 	// button click testing
 	if (numCacheClicks > 0){
 		self#cacheCell.text = "number of times refreshed: ".concat(numCacheClicks.toString());
+		self#cacheCell.$append(<br>);
 	}
 
 	// add in each line to cache UI with a break character
 	for (var i = 0; i < cacheArr.length; i++){
-		
+		self#cacheCell.$append({cacheArr[i]}<br>);
 	}
 	
 	numCacheClicks++;
+}
+
+function updateClock(){
+	// grab all cachelines from cache as string
+	// cache data comes in as .... abcd ....
+	// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
+	var cyclesStr = view.getClockCount();
+
+	self#clockCycles.text = "Clock Cycles: ".concat(cyclesStr); 
 }
 
 // ALWAYS REFRESH ALL DATA WHEN APP IS FIRST OPENED
 refreshRegs();
 refreshDram();
 refreshCache();
+updateClock();
 
 
 // BUTTON LISTENERS //////////////////////////
@@ -88,12 +100,13 @@ var cacheRefrshBtn = $(button#cacheRefrshBtn);
 cacheRefrshBtn.on("click", refreshCache);
 
 $(button#uploadInstrBtn).onClick = function(){
-  var allInstructions = view.uploadInstructionsFile("instructionsTest.txt"); // pass some attributes and value
+  var instrFileName = self#filePathField.text
+  var allInstructions = view.uploadInstructionsFile(instrFileName); // pass some attributes and value
   if (allInstructions === ""){
 	  self#instrctnsCell.text = "Something went wrong... double check your file name";
   } else {
 	  
-	  var instrctnsArr = allInstructions.split('-');
+	  var instrctnsArr = allInstructions.split('X');
 	  self#instrctnsCell.text = "";
 	  for (var i = 0; i < instrctnsArr.length; i++){
 		self#instrctnsCell.$append({instrctnsArr[i]}<br>);
@@ -106,5 +119,33 @@ $(button#saveProgStateBtn).onClick = function(){
 };
 
 $(button#readInProgStateBtn).onClick = function(){
-  var __ = view.readInProgState("progSaveTestCopy.txt"); // return is junk right now
+  var progFileName = self#progPathField.text
+  var __ = view.readInProgState(progFileName); // return is junk right now
+};
+
+$(button#runInstrs).onClick = function(){
+  var numSteps = self#numStepsToRun.text;
+  var cacheBool = "cacheBool_0";
+  var pipeBool = "pipeBool_0";
+  if (self#cacheCheckBox.state.checked == true){
+	cacheBool = "cacheBool_1";  
+  }
+  
+  if (self#pipeLineCheckBox.state.checked == true){
+	cacheBool = "pipeBool_1";  
+  }
+  
+  numSteps = numSteps.concat(cacheBool);
+  numSteps = numSteps.concat(pipeBool);
+  
+  var __ = view.runInstsructionsFor(numSteps); // return is junk right now
+  self#instrctnsCell.text = "";
+  for (var i = 0; i < instrctnsArr.length; i++){
+	if( 0 <= i && i < numSteps){
+		self#instrctnsCell.$append(<font color="green">{instrctnsArr[i]}</font><br>);
+	} else {
+		self#instrctnsCell.$append({instrctnsArr[i]}<br>);
+	}
+  }
+  updateClock();
 };

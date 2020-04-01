@@ -9,12 +9,17 @@ def getBinaryOf(instr) :
     registerLen = 64 # each GPR has 64 bits
 
     # list and dictionary provide map of instructions to op/type code
-    dataTransferInstrs = ["intload", "fload"]
-    computationalInsrs = ["add"]
+    dataTransferInstrs = ["liint", "fload", "intstore"]
+    computationalInsrs = ["add", "mul", "cmp"]
+    constrolInstrs = ["jump"]
     opCodeDict = {
-        "intload" : "0111",
-        "fload" : "0100",
-        "add" : "000000"
+        "liint" : "00111", # same opcode as intload in ISA doc
+        "fload" : "00100",
+        "add" : "00000",
+        "mul" : "00010",
+        "intstore" : "01000",
+        "jump" : "00000", # technically no opcode for control flow instrs
+        "cmp" : "01010"
     }
 
     # split up instrList for easier access
@@ -26,6 +31,8 @@ def getBinaryOf(instr) :
         typeCode = "001"
     elif instrName in computationalInsrs:
         typeCode = "011"
+    elif instrName == "jump":
+        typeCode = "000"
 
     # get conditional bit
     condBit = instrList[1]
@@ -35,19 +42,31 @@ def getBinaryOf(instr) :
 
     # get register numbers (in their binary form)
     instrRegs = []
-    for i in range(2, len(instrList) - 1):
-        # extend register numbers with 0s to always be regNumLen bits long
-        regNum = str(bin(int(instrList[i][1])))[2:]
-        if len(regNum) < regNumLen:
-            for i in range(regNumLen - len(regNum)):
-                regNum = "0" + regNum
-        instrRegs.append(regNum) # [1] ignores $ symbol
+    for i in range(2, len(instrList)):
+        if instrList[i][0] == '$': # we are at a register
+            regNum = str(bin(int(instrList[i][1])))[2:] # [1] ignores $ symbol, [2:] ignores '0b' characters
+            # extend register numbers with 0s to always be regNumLen bits long
+            if len(regNum) < regNumLen:
+                for i in range(regNumLen - len(regNum)):
+                    regNum = "0" + regNum
+            instrRegs.append(regNum)
+
+    # there should always be 5 registers
+    # if there's not, add in zero-filled registers
+    if len(instrRegs) < 5 :
+        for i in range(5 - len(instrRegs)):
+            instrRegs.append("000000")
 
     # get immediate value, if any
-    if "$" not in instrList[-1]:
+    immedSignVal = 0
+    if "x" in instrList[-1]: # assumes immediates are always given as hex values
+        if "-" in instrList[-1] : # flip sign bit if negative
+            immedSignVal = 1
         immedVal = str(bin(int(instrList[-1], 16)))[2:]
+    elif "<" in instrList[-1]: # TODO: add in the rest of the cmp operators here
+        instrRegs[3] = str(bin(5))[2:]
     else:
-        immedVal = "0000" # assume 0 immedVal if none exists
+        immedVal = "0" # assume 0 immedVal if none exists
 
     # concatenate all binary field values into one string
     binaryInstr = typeCode + condBit + opCode
@@ -55,9 +74,9 @@ def getBinaryOf(instr) :
         binaryInstr += reg
     if len(binaryInstr) + len(immedVal) < registerLen:
         # fill up remaining bits in register with 0s in the immediate bit
-        for i in range(registerLen - (len(binaryInstr) + len(immedVal))):
+        for i in range(24 - len(immedVal)):
             immedVal = "0" + immedVal
-    binaryInstr += immedVal
+    binaryInstr += str(immedSignVal) + immedVal
 
     # return concatenated string
     return binaryInstr

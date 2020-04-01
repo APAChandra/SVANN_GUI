@@ -14,14 +14,16 @@
 #include <string>
 #include "Python.h"
 #include "stdio.h"
+#include "pipeline.h"
 
 #include "sciter-x-window.hpp"
 #include "value.hpp"
 
 class frame : public sciter::window {
 public:
-    // INITIAL SETUP OF MEMORY OBJECT
+    // INITIAL SETUP OF MEMORY AND PIPELINE OBJECTS
     memory memTest;
+    pipeline pipeTest = pipeline(memTest);
 
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS | SW_MAIN | SW_ENABLE_DEBUG) {}
 
@@ -33,6 +35,8 @@ public:
         FUNCTION_1("uploadInstructionsFile", uploadInstructionsFile);
         FUNCTION_1("saveProgState", saveProgState);
         FUNCTION_1("readInProgState", readInProgState);
+        FUNCTION_0("getClockCount", getClockCount);
+        FUNCTION_1("runInstsructionsFor", runInstsructionsFor);
     END_FUNCTION_MAP
 
     sciter::string grabDataFrom_Cache() {
@@ -66,7 +70,85 @@ public:
                     str[63 - j] = '1';
             }
 
-            dramStr += str + WSTR(" ");
+            // convert binary string to hex string
+            wstring sBinary = str;
+            wstring rest(WSTR("0x")), tmp, chr = WSTR("0000");
+            int len = sBinary.length() / 4;
+            chr = chr.substr(0, len);
+            sBinary = chr + sBinary;
+            for (int i = 0; i < sBinary.length(); i += 4)
+            {
+                tmp = sBinary.substr(i, 4);
+                if (!tmp.compare(WSTR("0000")))
+                {
+                    rest = rest + WSTR("0");
+                }
+                else if (!tmp.compare(WSTR("0001")))
+                {
+                    rest = rest + WSTR("1");
+                }
+                else if (!tmp.compare(WSTR("0010")))
+                {
+                    rest = rest + WSTR("2");
+                }
+                else if (!tmp.compare(WSTR("0011")))
+                {
+                    rest = rest + WSTR("3");
+                }
+                else if (!tmp.compare(WSTR("0100")))
+                {
+                    rest = rest + WSTR("4");
+                }
+                else if (!tmp.compare(WSTR("0101")))
+                {
+                    rest = rest + WSTR("5");
+                }
+                else if (!tmp.compare(WSTR("0110")))
+                {
+                    rest = rest + WSTR("6");
+                }
+                else if (!tmp.compare(WSTR("0111")))
+                {
+                    rest = rest + WSTR("7");
+                }
+                else if (!tmp.compare(WSTR("1000")))
+                {
+                    rest = rest + WSTR("8");
+                }
+                else if (!tmp.compare(WSTR("1001")))
+                {
+                    rest = rest + WSTR("9");
+                }
+                else if (!tmp.compare(WSTR("1010")))
+                {
+                    rest = rest + WSTR("A");
+                }
+                else if (!tmp.compare(WSTR("1011")))
+                {
+                    rest = rest + WSTR("B");
+                }
+                else if (!tmp.compare(WSTR("1100")))
+                {
+                    rest = rest + WSTR("C");
+                }
+                else if (!tmp.compare(WSTR("1101")))
+                {
+                    rest = rest + WSTR("D");
+                }
+                else if (!tmp.compare(WSTR("1110")))
+                {
+                    rest = rest + WSTR("E");
+                }
+                else if (!tmp.compare(WSTR("1111")))
+                {
+                    rest = rest + WSTR("F");
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            dramStr += rest + WSTR(" ");
         }
 
         return dramStr;
@@ -95,14 +177,19 @@ public:
     // This function is not optimized AT ALL. I had heck of a time dealing with strings.
     sciter::string uploadInstructionsFile(sciter::value fileName)
     {
-        // Open file and read all instructions into one big sciter::string
         sciter::string fileNameWStr = fileName.get(L""); // convert value to string
+        
+
+        
+
+        // Open file and read all instructions into one big sciter::string
+        
         sciter::string allInstructions = WSTR(""); // this is what gets returned to the TIS script
         sciter::string instructionLine;
         std::wifstream instructionsFile(fileNameWStr);
         if (instructionsFile.is_open()){
             while (getline(instructionsFile, instructionLine)){
-                allInstructions += instructionLine + WSTR("-");
+                allInstructions += instructionLine + WSTR("X");
             }
             instructionsFile.close();
         }
@@ -136,7 +223,7 @@ public:
         //      - without it C++ will throw an error on the sysCall declaration
         std::string tmp = stdFileName;
         std::string sysCall = "python 535Assembler.py" + stdFileName;
-        system("python 535Assembler.py instructionsTest.txt");
+        system("python 535Assembler.py instructionsTest.txt"); // won't work currently
 
         // read binary instructions file and place instructions in DRAM
         std::string binInstrs = "";
@@ -145,18 +232,35 @@ public:
         std::string binInstrFileName = stdFileName.substr(0, stdFileName.length() - 4) + "Binary.txt";
         ifstream binInstrFile(binInstrFileName);
         int i = 0;
+        memTest.instructionsStart = 0;
         if (binInstrFile.is_open())
         {
             while (getline(binInstrFile, assemInsrLine))
             {
                 if (assemInsrLine.compare("") != 0) {
-                    memTest.DRAM[i] = stoll(assemInsrLine, 0 ,2);
+                    if (fileNameWStr.compare(WSTR("demoInstructions.txt")) != 0) {
+                        memTest.DRAM[i] = stoll(assemInsrLine, 0, 2);
+                    }
                     i++;
                 }
             }
             binInstrFile.close();
         }
+        memTest.instructionsEnd = i;
 
+        // for demo, manually fill instructions in DRAM (shh...)
+        int x = 0;
+        if (fileNameWStr.compare(WSTR("demoInstructions.txt")) == 0) {
+            memTest.DRAM[0] = 0b0010001110001010000000000000000000000000000000000000000011100110; //R5 = 0
+            memTest.DRAM[1] = 0b0010001110001100000000000000000000000000000000000000000011100111; //R6 = 5
+            memTest.DRAM[2] = 0b0010001110010100000000000000000000000000000000000000000011101000; //R10 = 40
+            memTest.DRAM[3] = 0b0010001110010110000000000000000000000000000000000000000011101001; //R11 = 1
+            memTest.DRAM[4] = 0b0110010100001010001100001010000000000000000000000000000000000000; //R3(CR) = R5 > R6
+            memTest.DRAM[5] = 0b0110000000001110010000010010000000000000000000000000000000000000; //R9 = R7 + R8
+            memTest.DRAM[6] = 0b0010010000010010010100000000000000000000000000000000000000000000; //DRAM[R10] = R9
+            memTest.DRAM[7] = 0b0110000000001010010110001010000000000000000000000000000000000000; //R5 = R11 + R5
+            memTest.DRAM[8] = 0b0001000000000000000000000000000000000001000000000000000000000100; //PC = PC - 4
+        }
 
         return allInstructions;
     }
@@ -263,6 +367,52 @@ public:
         }
 
         return fileNameWStr;
+    }
+
+    sciter::string runInstsructionsFor(sciter::value scitInstrsArgs) {
+        memTest.instructionsStart = 0; // assume instructions are at beginning of DRAM for now
+
+        // convert sciter value to string
+        wstring instrsArgs = scitInstrsArgs.get(L"");
+
+        // parse out number of steps, cache bool, and pipeline bool
+        int cacheBoolStrt = instrsArgs.find(WSTR("cacheBool_"))+10;
+        if (instrsArgs.substr(cacheBoolStrt, 1).compare(WSTR("0")) == 0) {
+            pipeTest.cache = false;
+        }
+        bool pipeBool = true;
+        int pipeBoolStrt = instrsArgs.find(WSTR("pipeBool_")) + 9;
+        if (instrsArgs.substr(cacheBoolStrt, 1).compare(WSTR("0")) == 0) {
+            pipeBool = false;
+        }
+        int numSteps = stoi(instrsArgs.substr(0, cacheBoolStrt));
+
+        // tell pipeline where to stop
+        memTest.instructionsEnd = memTest.instructionsStart + numSteps;
+
+        // run pipeline
+        if (pipeBool) {
+            pipeTest.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
+        }
+        else {
+            pipeTest.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
+        }
+        
+        
+        // previous instructions have now been ran
+        memTest.instructionsStart += numSteps;
+
+        // reset instructions start once all have been ran
+        if (memTest.instructionsStart == memTest.instructionsEnd) {
+            memTest.instructionsStart = 0;
+        }
+
+        return WSTR("");
+    }
+
+    sciter::string getClockCount() {
+        
+        return to_wstring(pipeTest.clock);
     }
 };
 

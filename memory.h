@@ -38,6 +38,10 @@ class memory {
 		// public?
 		cacheLine cache[16][4];
 
+        // Book Keepers to know where instructions are
+        int instructionsStart;
+        int instructionsEnd;
+
         // simple binary to decimal function
         // IN: a binary number of type int with NO leading zeroes
         // OUT: an int in base 10
@@ -61,8 +65,6 @@ class memory {
 
             return dec_value;
         }
-    
-        
 
         string GetHexFromBin(string sBinary)
     {

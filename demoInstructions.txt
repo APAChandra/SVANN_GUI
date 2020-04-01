@@ -1,10 +1,9 @@
-liint 0 $5 0x000
-liint 0 $6 0x005
-liint 0 $10 0x0040
-liint 0 $11 0x001
-mul 0 $5 $0 $5
-cmp 0 $5 $6 > 
-add 0 $7 $8 $9
-intstore 0 $9 $10
-add 0 $5 $11 $5
-branch 1 0 0x005
+R5 = 0
+R6 = 5
+R10 = 40
+R11 = 1
+R3(CR) = R5 > R6
+R9 = R7 + R8
+DRAM[R10] = R9
+R5 = R11 + R5
+PC = PC - 4

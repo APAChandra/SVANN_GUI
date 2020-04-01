@@ -28,6 +28,8 @@
 
             <!-- CONTROL PANEL CELL -->
             <td id="contrlPnlCell" class="cntntCell" rowspan="3">
+                <div id="clockCycles"></div>
+
                 <button type="button" id="regsRefrshBtn">Refresh Registers</button><br />
                 <button type="button" id="dramRefrshBtn">Refresh DRAM</button><br />
                 <button type="button" id="cacheRefrshBtn">Refresh Cache</button><br />
@@ -40,11 +42,26 @@
                 <br />
 
                 <button type="button" id="saveProgStateBtn">Save Current Program State</button><br />
-                <br />
+
 
                 <label for="filePathField">Enter a program state file name:</label><br><br>
-                <input type="text" id="progrStateUpload"><br />
-                <button type="button" id="readInProgStateBtn">Upload Program State File</button>
+                <input type="text" id="progPathField"><br />
+                <button type="button" id="readInProgStateBtn">Upload Program State File</button><br />
+                <br />
+
+                <label for="numStepsToRun">Enter number of steps to run for:</label><br><br>
+                <input type="text" id="numStepsToRun"><br />
+                <button type="button" id="runInstrs">Run Instructions For # Steps Above</button><br />
+                <br />
+
+                <input type="checkbox" id="cacheCheckBox">
+                <label for="cacheCheckBox"> Run With Cache</label><br>
+                <br />
+
+                <input type="checkbox" id="pipeLineCheckBox">
+                <label for="pipeLineCheckBox">Run With Pipeline</label><br>
+                <br />
+
 
 
             </td>
