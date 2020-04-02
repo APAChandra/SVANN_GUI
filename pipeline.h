@@ -42,7 +42,7 @@ public:
 	int npcmem;
 	int npcwb;
 
-	pipeline(memory in) {
+	pipeline(memory& in) {
 		mem = in;
 		Imm = 0;
 		IR = 0LL;

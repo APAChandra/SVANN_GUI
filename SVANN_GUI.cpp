@@ -23,7 +23,8 @@ class frame : public sciter::window {
 public:
     // INITIAL SETUP OF MEMORY AND PIPELINE OBJECTS
     memory memTest;
-    pipeline pipeTest = pipeline(memTest);
+    pipeline globalPipeline = pipeline(memTest); // reinitialize pipeTestObject
+
 
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS | SW_MAIN | SW_ENABLE_DEBUG) {}
 
@@ -375,6 +376,7 @@ public:
 
     sciter::string runInstsructionsFor(sciter::value scitInstrsArgs) {
         memTest.instructionsStart = 0; // assume instructions are at beginning of DRAM for now
+        globalPipeline = pipeline(memTest); // refresh pipeline object
 
         // convert sciter value to string
         wstring instrsArgs = scitInstrsArgs.get(L"");
@@ -382,7 +384,7 @@ public:
         // parse out number of steps, cache bool, and pipeline bool
         int cacheBoolStrt = instrsArgs.find(WSTR("cacheBool_"))+10;
         if (instrsArgs.substr(cacheBoolStrt, 1).compare(WSTR("0")) == 0) {
-            pipeTest.cache = false;
+            globalPipeline.cache = false;
         }
         bool pipeBool = true;
         int pipeBoolStrt = instrsArgs.find(WSTR("pipeBool_")) + 9;
@@ -396,10 +398,10 @@ public:
 
         // run pipeline
         if (pipeBool) {
-            pipeTest.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
+            globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
         }
         else {
-            pipeTest.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
+            globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
         }
         
         
@@ -414,9 +416,10 @@ public:
         return WSTR("");
     }
 
+    // This function is probably broken right now
+    // most likely is behind on actual clockcount
     sciter::string getClockCount() {
-        
-        return to_wstring(pipeTest.clock);
+        return to_wstring(globalPipeline.clock);
     }
 };
 
