@@ -55,7 +55,7 @@ public:
 			regHaz[i] = false;
 		}
 		for (int i = 0; i < 5; i++) {
-			FUstate[i] = true; c
+			FUstate[i] = true; 
 				reg[i] = 0;
 		}
 	}
