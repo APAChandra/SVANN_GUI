@@ -55,8 +55,8 @@ public:
 			regHaz[i] = false;
 		}
 		for (int i = 0; i < 5; i++) {
-			FUstate[i] = true; 
-				reg[i] = 0;
+			FUstate[i] = true;
+			reg[i] = 0;
 		}
 	}
 
@@ -71,9 +71,8 @@ public:
 
 	int bitExtracted(long long int number, int p, int k)
 	{
-		p = p + 1;
-
-		return (((1 << k) - 1) & (number >> (p - 1)));
+		string num = mem.decToBinary(number);
+		return stoi(num.substr(p, k), nullptr, 2);
 	}
 
 	void IF() {
@@ -94,7 +93,7 @@ public:
 			RAW = true;
 			RAWind = mem.registers[1];
 		}
-		Imm = bitExtracted(IR, 40, 23);
+		Imm = bitExtracted(IR, 40, 24);
 		int sign = bitExtracted(IR, 39, 1);
 		if (sign == 1)
 			Imm = 0 - Imm;
@@ -179,11 +178,10 @@ public:
 			else if (type == 0) {
 				mem.registers[1] = npc + Imm;
 				IF();
+				return;
 			}
 		}
-		if (!branch) {
-			ID();
-		}
+		ID();
 	}
 
 	void MEM() {
@@ -217,9 +215,6 @@ public:
 			}
 			if (type == 0) {
 				mem.registers[1] = ALUo;
-			}
-			else {
-				mem.registers[1] = npc;
 			}
 		}
 		else {

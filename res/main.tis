@@ -123,6 +123,8 @@ $(button#readInProgStateBtn).onClick = function(){
   var __ = view.readInProgState(progFileName); // return is junk right now
 };
 
+
+// variable names are a mess here
 $(button#runInstrs).onClick = function(){
   var numSteps = self#numStepsToRun.text;
   var cacheBool = "cacheBool_0";
@@ -139,9 +141,13 @@ $(button#runInstrs).onClick = function(){
   numSteps = numSteps.concat(pipeBool);
   
   var __ = view.runInstsructionsFor(numSteps); // return is junk right now
+  var instrFileName = self#filePathField.text
+  var allInstructions = view.uploadInstructionsFile(instrFileName);
+  var instrctnsArr = allInstructions.split('X');
+  var numSteps1 = self#numStepsToRun.text;
   self#instrctnsCell.text = "";
   for (var i = 0; i < instrctnsArr.length; i++){
-	if( 0 <= i && i < numSteps){
+	if( 0 <= i && i < numSteps1){
 		self#instrctnsCell.$append(<font color="green">{instrctnsArr[i]}</font><br>);
 	} else {
 		self#instrctnsCell.$append({instrctnsArr[i]}<br>);

@@ -207,11 +207,12 @@ class memory {
                         //set tag
                         cache[set][i].tag = tag;
                         //get ram addr with 0 offset
-                        string x = tag + set + "00";
+                        string x = address.substr(0, 62) + "00";
                         long long int ramAddr = stoll(x, 0, 2);
                         //iterate over word line
                         for (int j = 0; j < 4; j++) {
-                            long long int word = DRAM[binaryToDecimal(ramAddr)];
+                            //long long int word = DRAM[binaryToDecimal(ramAddr)];
+                            long long int word = DRAM[ramAddr];
                             if (ramAddr == binary) {
                                 registers[regIndex] = word;
                             }
@@ -229,7 +230,7 @@ class memory {
                         //set tag
                         cache[set][i].tag = tag;
                         //get ram addr with 0 offset
-                        string x = tag + set + "00";
+                        string x = address.substr(0, 62) + "00";
                         long long int ramAddr = stoll(x, 0, 2);
                         //iterate over word line
                         for (int j = 0; j < 4; j++) {
