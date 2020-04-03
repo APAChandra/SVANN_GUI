@@ -23,7 +23,8 @@ class frame : public sciter::window {
 public:
     // INITIAL SETUP OF MEMORY AND PIPELINE OBJECTS
     memory memTest;
-    pipeline pipeTest = pipeline(memTest);
+    pipeline globalPipeline = pipeline(memTest); // reinitialize pipeTestObject
+
 
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS | SW_MAIN | SW_ENABLE_DEBUG) {}
 
@@ -251,6 +252,10 @@ public:
         // for demo, manually fill instructions in DRAM (shh...)
         int x = 0;
         if (fileNameWStr.compare(WSTR("demoInstructions.txt")) == 0) {
+            memTest.DRAM[230] = 0;
+            memTest.DRAM[231] = 5;
+            memTest.DRAM[232] = 40;
+            memTest.DRAM[233] = 1;
             memTest.DRAM[0] = 0b0010001110001010000000000000000000000000000000000000000011100110; //R5 = 0
             memTest.DRAM[1] = 0b0010001110001100000000000000000000000000000000000000000011100111; //R6 = 5
             memTest.DRAM[2] = 0b0010001110010100000000000000000000000000000000000000000011101000; //R10 = 40
@@ -371,6 +376,7 @@ public:
 
     sciter::string runInstsructionsFor(sciter::value scitInstrsArgs) {
         memTest.instructionsStart = 0; // assume instructions are at beginning of DRAM for now
+        globalPipeline = pipeline(memTest); // refresh pipeline object
 
         // convert sciter value to string
         wstring instrsArgs = scitInstrsArgs.get(L"");
@@ -378,7 +384,7 @@ public:
         // parse out number of steps, cache bool, and pipeline bool
         int cacheBoolStrt = instrsArgs.find(WSTR("cacheBool_"))+10;
         if (instrsArgs.substr(cacheBoolStrt, 1).compare(WSTR("0")) == 0) {
-            pipeTest.cache = false;
+            globalPipeline.cache = false;
         }
         bool pipeBool = true;
         int pipeBoolStrt = instrsArgs.find(WSTR("pipeBool_")) + 9;
@@ -392,10 +398,10 @@ public:
 
         // run pipeline
         if (pipeBool) {
-            pipeTest.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
+            globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
         }
         else {
-            pipeTest.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
+            globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
         }
         
         
@@ -410,9 +416,10 @@ public:
         return WSTR("");
     }
 
+    // This function is probably broken right now
+    // most likely is behind on actual clockcount
     sciter::string getClockCount() {
-        
-        return to_wstring(pipeTest.clock);
+        return to_wstring(globalPipeline.clock);
     }
 };
 
