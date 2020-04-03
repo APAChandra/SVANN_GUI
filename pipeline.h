@@ -71,9 +71,8 @@ public:
 
 	int bitExtracted(long long int number, int p, int k)
 	{
-		p = p + 1;
-
-		return (((1 << k) - 1) & (number >> (p - 1)));
+		string num = mem.decToBinary(number);
+		return stoi(num.substr(p, k), 0, 2);
 	}
 
 	void IF() {
