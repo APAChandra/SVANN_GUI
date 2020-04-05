@@ -278,7 +278,7 @@ public:
 		}
 	}
 
-	void runPipeline(int startAddr, int endAddr) {
+	memory runPipeline(int startAddr, int endAddr) {
 		mem.registers[1] = startAddr;
 		IF();
 		clock++;
@@ -301,6 +301,8 @@ public:
 				clock++;
 			}
 		}
+
+		return mem;
 	}
 
 	void runWithoutPipeLine(int startAddr, int endAddr) {
