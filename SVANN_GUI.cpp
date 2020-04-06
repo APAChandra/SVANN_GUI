@@ -256,6 +256,8 @@ public:
             memTest.DRAM[231] = 2;
             memTest.DRAM[232] = 40;
             memTest.DRAM[233] = 1;
+            memTest.registers[7] = 2;
+            memTest.registers[8] = 3;
             memTest.DRAM[0] = 0b0010001110001010000000000000000000000000000000000000000011100110; //R5 = 0
             memTest.DRAM[1] = 0b0010001110001100000000000000000000000000000000000000000011100111; //R6 = 2
             memTest.DRAM[2] = 0b0010001110010100000000000000000000000000000000000000000011101000; //R10 = 40
@@ -401,7 +403,7 @@ public:
             memTest = globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
         }
         else {
-            globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
+            memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
         }
         
         

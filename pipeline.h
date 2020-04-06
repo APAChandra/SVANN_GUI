@@ -95,7 +95,7 @@ public:
 		}
 		if (regHaz[reg[0]] || regHaz[reg[1]]) {
 			RAW = true;
-			RAWind = mem.registers[1];
+			RAWind = npc;
 		}
 		Imm = bitExtracted(IR, 40, 24);
 		int sign = bitExtracted(IR, 39, 1);
@@ -114,26 +114,26 @@ public:
 	}
 
 	void EX() {
-		A = reg[0]; B = reg[2]; C = reg[3]; cbit2 = cbit; typemem = type; opcodemem = opcode;
+		A = reg[0]; B = reg[1]; C = reg[2]; cbit2 = cbit; typemem = type; opcodemem = opcode;
 		if (cbit == 0 || (cbit == 1 && mem.registers[3])) {
 			if (type == 3) {
 				switch (opcode)
 				{
 				case 0:
 					ALUo = mem.registers[reg[0]] + mem.registers[reg[1]] + Imm;
-
+					regHaz[reg[2]] = true;
 					break;
 				case 1:
 					ALUo = mem.registers[reg[0]] - mem.registers[reg[1]] + Imm;
-					regHaz[reg[2]] == true;
+					regHaz[reg[2]] = true;
 					break;
 				case 2:
 					ALUo = mem.registers[reg[0]] * mem.registers[reg[1]];
-					regHaz[reg[2]] == true;
+					regHaz[reg[2]] = true;
 					break;
 				case 4:
 					ALUo = mem.registers[reg[0]] / mem.registers[reg[1]];
-					regHaz[reg[2]] == true;
+					regHaz[reg[2]] = true;
 					break;
 				case 10:
 					int cmp = bitExtracted(reg[2], 3, 3);
@@ -169,11 +169,11 @@ public:
 				{
 				case 7:
 					ALUo = mem.registers[reg[1]] + Imm;
-					regHaz[reg[0]] == true;
+					regHaz[reg[0]] = true;
 					break;
 				case 8:
 					ALUo = mem.registers[reg[1]] + Imm;
-					regHaz[reg[0]] == true;
+					regHaz[reg[0]] = true;
 					break;
 				default:
 					break;
@@ -263,13 +263,13 @@ public:
 			next = 1;
 		}
 		else if (RAW && RAWind == ins_track.front()) {
-			RAW = true;
+			RAW = false;
 			ins_track.pop();
 			EX();
 			next = 1;
 		}
 		else if (cond && ins_track.front() == condind) {
-			cond = true;
+			cond = false;
 			ins_track.pop();
 			EX();
 			next = 1;
@@ -293,7 +293,7 @@ public:
 		MEM();
 		clock++;
 		WB();
-		while (mem.registers[1] < endAddr) {
+		while (mem.registers[1] < endAddr + 20) {
 			if (next == 1) {
 				MEM();
 				clock++;
@@ -309,10 +309,12 @@ public:
 		return mem;
 	}
 
-	void runWithoutPipeLine(int startAddr, int endAddr) {
+	memory runWithoutPipeLine(int startAddr, int endAddr) {
 		for (int i = startAddr; i < endAddr; i++) {
 			runPipeline(i, i);
 		}
+
+		return mem;
 	}
 
 };
