@@ -398,7 +398,7 @@ public:
 
         // run pipeline
         if (pipeBool) {
-            globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
+            memTest = globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
         }
         else {
             globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
