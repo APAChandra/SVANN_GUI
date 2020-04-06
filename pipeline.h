@@ -41,6 +41,10 @@ public:
 	int npcex;
 	int npcmem;
 	int npcwb;
+	int typemem;
+	int opcodemem;
+	int typewb;
+	int opcodewb;
 
 	pipeline(memory& in) {
 		mem = in;
@@ -110,7 +114,7 @@ public:
 	}
 
 	void EX() {
-		A = reg[0]; B = reg[2]; C = reg[3]; cbit2 = cbit;
+		A = reg[0]; B = reg[2]; C = reg[3]; cbit2 = cbit; typemem = type; opcodemem = opcode;
 		if (cbit == 0 || (cbit == 1 && mem.registers[3])) {
 			if (type == 3) {
 				switch (opcode)
@@ -185,10 +189,10 @@ public:
 	}
 
 	void MEM() {
-		Awb = A; Bwb = B; Cwb = C; cbitwb = cbit2; ALUowb = ALUo;
+		Awb = A; Bwb = B; Cwb = C; cbitwb = cbit2; ALUowb = ALUo; typewb = typemem; opcodewb = opcodemem;
 		if (cbit2 == 0 || (cbit2 == 1 && mem.registers[3])) {
-			if (type == 1) {
-				switch (opcode)
+			if (typemem == 1) {
+				switch (opcodemem)
 				{
 				case 7:
 					if (cache == false) {
@@ -213,7 +217,7 @@ public:
 					break;
 				}
 			}
-			if (type == 0) {
+			if (typemem == 0) {
 				mem.registers[1] = ALUo;
 			}
 		}
@@ -234,8 +238,8 @@ public:
 
 	void WB() {
 		if (cbitwb == 0 || (cbitwb == 1 && mem.registers[3])) {
-			if (type == 3) {
-				switch (opcode)
+			if (typewb == 3) {
+				switch (opcodewb)
 				{
 				case 0:
 				case 1:
