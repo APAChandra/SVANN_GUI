@@ -180,9 +180,6 @@ public:
     {
         sciter::string fileNameWStr = fileName.get(L""); // convert value to string
         
-
-        
-
         // Open file and read all instructions into one big sciter::string
         
         sciter::string allInstructions = WSTR(""); // this is what gets returned to the TIS script
@@ -223,8 +220,8 @@ public:
         //      - This temporary variable is apparently extremely important!
         //      - without it C++ will throw an error on the sysCall declaration
         std::string tmp = stdFileName;
-        std::string sysCall = "python 535Assembler.py" + stdFileName;
-        system("python 535Assembler.py instructionsTest.txt"); // won't work currently
+        std::string sysCall = "python 535Assembler.py " + stdFileName;
+        system("python 535Assembler.py demoInstructions.txt"); // conversion from std::string to  * char?
 
         // read binary instructions file and place instructions in DRAM
         std::string binInstrs = "";
@@ -239,9 +236,7 @@ public:
             while (getline(binInstrFile, assemInsrLine))
             {
                 if (assemInsrLine.compare("") != 0) {
-                    if (fileNameWStr.compare(WSTR("demoInstructions.txt")) != 0) {
-                        memTest.DRAM[i] = stoll(assemInsrLine, 0, 2);
-                    }
+                    memTest.DRAM[i] = stoll(assemInsrLine, 0, 2);
                     i++;
                 }
             }
@@ -249,7 +244,7 @@ public:
         }
         memTest.instructionsEnd = i;
 
-        // for demo, manually fill instructions in DRAM (shh...)
+        // for demo, manually fill data in DRAM (shh...)
         int x = 0;
         if (fileNameWStr.compare(WSTR("demoInstructions.txt")) == 0) {
             memTest.DRAM[230] = 0;
@@ -258,15 +253,6 @@ public:
             memTest.DRAM[233] = 1;
             memTest.registers[7] = 2;
             memTest.registers[8] = 3;
-            memTest.DRAM[0] = 0b0010001110001010000000000000000000000000000000000000000011100110; //R5 = 0
-            memTest.DRAM[1] = 0b0010001110001100000000000000000000000000000000000000000011100111; //R6 = 2
-            memTest.DRAM[2] = 0b0010001110010100000000000000000000000000000000000000000011101000; //R10 = 40
-            memTest.DRAM[3] = 0b0010001110010110000000000000000000000000000000000000000011101001; //R11 = 1
-            memTest.DRAM[4] = 0b0110010100001010001100001010000000000000000000000000000000000000; //R3(CR) = R5 > R6
-            memTest.DRAM[5] = 0b0110000000001110010000010010000000000000000000000000000000000000; //R9 = R7 + R8
-            memTest.DRAM[6] = 0b0010010000010010010100000000000000000000000000000000000000000000; //DRAM[R10] = R9
-            memTest.DRAM[7] = 0b0110000000001010010110001010000000000000000000000000000000000000; //R5 = R11 + R5
-            memTest.DRAM[8] = 0b0001000000000000000000000000000000000001000000000000000000000100; //PC = PC - 4
         }
 
         return allInstructions;
