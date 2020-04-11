@@ -75,7 +75,7 @@ public:
 	so, you should get only 10101 i.e. 21.*/
 
 	int secElem(deque<int> x) {
-		 deque<int> y (x);
+		deque<int> y(x);
 		if (x.size() >= 2) {
 			int a = y.front();
 			y.pop_front();
@@ -200,7 +200,7 @@ public:
 				}
 			}
 			else if (type == 0) {
-				mem.registers[1] = (npc-1) + Imm;
+				mem.registers[1] = (npc - 1) + Imm;
 				ins_track.pop_back();
 				IF();
 				return;
