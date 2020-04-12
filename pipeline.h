@@ -51,11 +51,16 @@ public:
 		Imm = 0;
 		IR = 0LL;
 		ALUo = 0;
+		npc = 0;
+		branchind = 0;
 		A = 0;
 		B = 0;
 		C = 0;
 		clock = 0;
 		cache = true;
+		branch = false;
+		RAW = false;
+		cond = false;
 		for (int i = 0; i < 64; i++) {
 			regHaz[i] = false;
 		}
@@ -129,12 +134,20 @@ public:
 			cond = true;
 			condind = npc;
 		}
+		if (type == 7) {
+			next = 4;
+			return;
+		}
 
 		IF();
 	}
 
 	void EX() {
 		A = reg[0]; B = reg[1]; C = reg[2]; cbit2 = cbit; typemem = type; opcodemem = opcode;
+		if (type == 7) {
+			next = 4;
+			return;
+		}
 		if (cbit == 0 || (cbit == 1 && mem.registers[3])) {
 			if (type == 3) {
 				switch (opcode)
@@ -211,6 +224,10 @@ public:
 
 	void MEM() {
 		Awb = A; Bwb = B; Cwb = C; cbitwb = cbit2; ALUowb = ALUo; typewb = typemem; opcodewb = opcodemem;
+		if (typemem == 7) {
+			next = 4;
+			return;
+		}
 		if (cbit2 == 0 || (cbit2 == 1 && mem.registers[3])) {
 			if (typemem == 1) {
 				switch (opcodemem)
@@ -257,6 +274,10 @@ public:
 	}
 
 	void WB() {
+		if (typewb == 7) {
+			next = 4;
+			return;
+		}
 		if (cbitwb == 0 || (cbitwb == 1 && mem.registers[3])) {
 			if (typewb == 3) {
 				switch (opcodewb)
@@ -313,7 +334,7 @@ public:
 		MEM();
 		clock++;
 		WB();
-		while (mem.registers[1] < endAddr + 20) {
+		while (next != 4) {
 			if (next == 1) {
 				MEM();
 				clock++;
