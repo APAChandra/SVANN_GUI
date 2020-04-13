@@ -2,95 +2,113 @@
 
 import sys
 
+
 # in: string instruction line in assembly
 # out: string instruction line in binary
-def getBinaryOf(instr) :
-    regNumLen = 6 # there are 2^6 = 64 GPRs
-    registerLen = 64 # each GPR has 64 bits
+def get_binary_of(instr):
+    regNumLen = 6           # there are 2^6 = 64 GPRs
+    numRegs = 5             # there are 5 register fields
+    # registerLen = 64        # each GPR has 64 bits
+    immedFieldLen = 24      # immediate field is 24 bits
 
-    # list and dictionary provide map of instructions to op/type code
-    dataTransferInstrs = ["liint", "fload", "intstore"]
-    computationalInsrs = ["add", "mul", "cmp"]
-    constrolInstrs = ["jump"]
-    opCodeDict = {
-        "liint" : "00111", # same opcode as intload in ISA doc
-        "fload" : "00100",
-        "add" : "00000",
-        "mul" : "00010",
-        "intstore" : "01000",
-        "jump" : "00000", # technically no opcode for control flow instrs
-        "cmp" : "01010"
-    }
-
-    # split up instrList for easier access
+    # parse out all parameters and get instruction name
     instrList = instr.split(' ')
     instrName = instrList[0]
 
     # get type code
+    dataTransferInstrs = ["LOADINT", "INTSTORE"]
+    computationalInstrs = ["ADD"]
+    controlFlowInstrs = ["CMP"]
+
     if instrName in dataTransferInstrs:
         typeCode = "001"
-    elif instrName in computationalInsrs:
+    elif instrName in computationalInstrs:
         typeCode = "011"
-    elif instrName == "jump":
+    elif instrName in controlFlowInstrs:
+        typeCode = "011"
+    elif instrName == "JUMP":  # JUMP is the only instruction with tyeCode 000
         typeCode = "000"
 
     # get conditional bit
     condBit = instrList[1]
 
-    # get op code
+    # get opcode
+    opCodeDict = {
+        "LOADINT":  "00111",
+        "INTSTORE": "01000",
+        "ADD":      "00000",
+        "CMP":      "01010",
+        "JUMP":     "00000"
+    }
+
     opCode = opCodeDict[instrName]
 
     # get register numbers (in their binary form)
+    # grab hex immediate value if present
     instrRegs = []
-    for i in range(2, len(instrList)):
-        if instrList[i][0] == '$': # we are at a register
-            regNum = str(bin(int(instrList[i][1])))[2:] # [1] ignores $ symbol, [2:] ignores '0b' characters
+    immedValHex = "0"
+    for param in instrList[2:]:
+        if param[0] == 'R':
             # extend register numbers with 0s to always be regNumLen bits long
-            if len(regNum) < regNumLen:
-                for i in range(regNumLen - len(regNum)):
-                    regNum = "0" + regNum
-            instrRegs.append(regNum)
+            binRegNum = str(bin(int(param[1:])))[2:]
+            if len(binRegNum) < regNumLen:
+                for i in range(regNumLen - len(binRegNum)):
+                    binRegNum = "0" + binRegNum
+            instrRegs.append(binRegNum)
+        elif len(param) > 1 and param[1] == 'x':
+            immedValHex = param
+    print(instrRegs)
 
-    # there should always be 5 registers
-    # if there's not, add in zero-filled registers
-    if len(instrRegs) < 5 :
-        for i in range(5 - len(instrRegs)):
+    # grab special compare params if CMP instruction
+    if instrName == "CMP":
+        cmpType = instrList[-2]
+        cmpOperand = instrList[-1]
+
+        # convert compare params to binary and place them in register
+        cmpParamsDict = {
+            ("", ""): "",
+            ("INT", ">"): "000101"
+        }
+        instrRegs.append(cmpParamsDict[(cmpType, cmpOperand)])
+
+    # add in any registers not used as zero-filled fields
+    if len(instrRegs) < numRegs:
+        for i in range(numRegs - len(instrRegs)):
             instrRegs.append("000000")
 
-    # get immediate value, if any
-    immedSignVal = 0
-    if "x" in instrList[-1]: # assumes immediates are always given as hex values
-        if "-" in instrList[-1] : # flip sign bit if negative
-            immedSignVal = 1
-        immedVal = str(bin(int(instrList[-1], 16)))[2:]
-    elif "<" in instrList[-1]: # TODO: add in the rest of the cmp operators here
-        instrRegs[3] = str(bin(5))[2:]
-    else:
-        immedVal = "0" # assume 0 immedVal if none exists
+    # convert immediate value to binary if present
+    immedValSign = "0"  # will be flipped to 1 if hex is present
+    immedValBin = ""
+    if immedValHex != "0":
+        immedValSign = immedValHex[0]
+        immedValBin = str(bin(int(immedValHex[2:], 16)))[2:]
+
+    # fill immediate with correct number of zeroes
+    if len(immedValBin) < immedFieldLen:
+        for i in range(immedFieldLen - len(immedValBin)):
+            immedValBin = "0" + immedValBin
 
     # concatenate all binary field values into one string
     binaryInstr = typeCode + condBit + opCode
     for reg in instrRegs:
         binaryInstr += reg
-    if len(binaryInstr) + len(immedVal) < registerLen:
-        # fill up remaining bits in register with 0s in the immediate bit
-        for i in range(24 - len(immedVal)):
-            immedVal = "0" + immedVal
-    binaryInstr += str(immedSignVal) + immedVal
+    binaryInstr += immedValSign + immedValBin
 
     # return concatenated string
     return binaryInstr
 
+
 projectPath = "C:/Users/Chase\'s Laptop/source/repos/SVANN_GUI/"
+# projectPath = "C:/Users/Chase's Laptop/PycharmProjects/535Assembler/"
 
 assemblyFile = projectPath + sys.argv[1]
 binaryStr = ""
 with open(assemblyFile, "r") as a_file:
-  for line in a_file:
-    stripped_line = line.strip()
-    print('assembly line:',stripped_line)
-    print('binary line: ',getBinaryOf(stripped_line))
-    binaryStr += getBinaryOf(stripped_line) + "\n"
+    for line in a_file:
+        stripped_line = line.strip()
+        print('assembly line:', stripped_line)
+        print('binary line: ', get_binary_of(stripped_line))
+        binaryStr += get_binary_of(stripped_line) + "\n"
 
 binaryFile = projectPath + sys.argv[1][:-4] + "Binary.txt"
 f = open(binaryFile, "w")
