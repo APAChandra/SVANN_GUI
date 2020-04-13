@@ -180,9 +180,6 @@ public:
     {
         sciter::string fileNameWStr = fileName.get(L""); // convert value to string
         
-
-        
-
         // Open file and read all instructions into one big sciter::string
         
         sciter::string allInstructions = WSTR(""); // this is what gets returned to the TIS script
@@ -239,7 +236,7 @@ public:
             while (getline(binInstrFile, assemInsrLine))
             {
                 if (assemInsrLine.compare("") != 0) {
-                    memTest.DRAM[i] = stoll(assemInsrLine, 0, 2);
+                    memTest.DRAM[i] = stoull(assemInsrLine, 0, 2);
                     i++;
                 }
             }

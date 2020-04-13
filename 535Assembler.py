@@ -6,10 +6,10 @@ import sys
 # in: string instruction line in assembly
 # out: string instruction line in binary
 def get_binary_of(instr):
-    regNumLen = 6           # there are 2^6 = 64 GPRs
-    numRegs = 5             # there are 5 register fields
+    regNumLen = 6  # there are 2^6 = 64 GPRs
+    numRegs = 5  # there are 5 register fields
     # registerLen = 64        # each GPR has 64 bits
-    immedFieldLen = 24      # immediate field is 24 bits
+    immedFieldLen = 24  # immediate field is 24 bits
 
     # parse out all parameters and get instruction name
     instrList = instr.split(' ')
@@ -34,11 +34,11 @@ def get_binary_of(instr):
 
     # get opcode
     opCodeDict = {
-        "LOADINT":  "00111",
+        "LOADINT": "00111",
         "INTSTORE": "01000",
-        "ADD":      "00000",
-        "CMP":      "01010",
-        "JUMP":     "00000"
+        "ADD": "00000",
+        "CMP": "01010",
+        "JUMP": "00000"
     }
 
     opCode = opCodeDict[instrName]
@@ -109,6 +109,8 @@ with open(assemblyFile, "r") as a_file:
         print('assembly line:', stripped_line)
         print('binary line: ', get_binary_of(stripped_line))
         binaryStr += get_binary_of(stripped_line) + "\n"
+        # add in exit instruction
+    binaryStr += "1110000000000000000000000000000000000000000000000000000000000000\n"
 
 binaryFile = projectPath + sys.argv[1][:-4] + "Binary.txt"
 f = open(binaryFile, "w")
