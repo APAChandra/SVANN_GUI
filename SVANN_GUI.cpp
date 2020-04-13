@@ -246,13 +246,20 @@ public:
 
         // for demo, manually fill instructions in DRAM (shh...)
         int x = 0;
-        if (fileNameWStr.compare(WSTR("selectionSort.txt")) == 0) {
+        if (fileNameWStr.compare(WSTR("demoInstructions.txt")) == 0) {
             memTest.DRAM[230] = 0;
             memTest.DRAM[231] = 2;
             memTest.DRAM[232] = 40;
             memTest.DRAM[233] = 1;
             memTest.registers[7] = 2;
             memTest.registers[8] = 3;
+        }
+        else if (fileNameWStr.compare(WSTR("selectionSort.txt")) == 0) {
+            memTest.DRAM[100] = 69;
+            memTest.DRAM[101] = 65;
+            memTest.DRAM[102] = 103;
+            memTest.DRAM[103] = 23;
+            memTest.DRAM[104] = 102;
         }
 
         return allInstructions;
