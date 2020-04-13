@@ -148,7 +148,7 @@ public:
 			next = 4;
 			return;
 		}
-		if (cbit == 0 || (cbit == 1 && mem.registers[3])) {
+		if (cbit == 0 || (cbit == 1 && mem.registers[3] == 1)) {
 			if (type == 3) {
 				switch (opcode)
 				{
