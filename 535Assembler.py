@@ -67,7 +67,8 @@ def get_binary_of(instr):
         # convert compare params to binary and place them in register
         cmpParamsDict = {
             ("", ""): "",
-            ("INT", ">"): "000101"
+            ("INT", ">"): "000101",
+            ("INT", "!="): "000001"
         }
         instrRegs.append(cmpParamsDict[(cmpType, cmpOperand)])
 

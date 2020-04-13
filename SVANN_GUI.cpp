@@ -221,7 +221,7 @@ public:
         //      - without it C++ will throw an error on the sysCall declaration
         std::string tmp = stdFileName;
         std::string sysCall = "python 535Assembler.py" + stdFileName;
-        system("python 535Assembler.py demoInstructions.txt"); // won't work currently
+        system("python 535Assembler.py selectionSort.txt"); // won't work currently
 
         // read binary instructions file and place instructions in DRAM
         std::string binInstrs = "";
@@ -246,7 +246,7 @@ public:
 
         // for demo, manually fill instructions in DRAM (shh...)
         int x = 0;
-        if (fileNameWStr.compare(WSTR("demoInstructions.txt")) == 0) {
+        if (fileNameWStr.compare(WSTR("selectionSort.txt")) == 0) {
             memTest.DRAM[230] = 0;
             memTest.DRAM[231] = 2;
             memTest.DRAM[232] = 40;
