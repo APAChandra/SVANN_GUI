@@ -177,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="instructionsTest.txt" />
+    <Text Include="selectionSort.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\AppData\Local\Programs\Python\Python37\python37_d.dll" />

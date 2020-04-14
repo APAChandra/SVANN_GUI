@@ -80,6 +80,9 @@
     <Text Include="instructionsTest.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="selectionSort.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\PycharmProjects\535Assembler\venv\535Assembler.py" />
