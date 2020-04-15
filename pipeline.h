@@ -219,6 +219,12 @@ public:
 				return;
 			}
 		}
+
+		// ignore branch hazards when jumps are not taken
+		if (type == 0) {
+			branch = false;
+		}
+
 		ID();
 	}
 
