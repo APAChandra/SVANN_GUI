@@ -257,9 +257,9 @@ public:
         else if (fileNameWStr.compare(WSTR("selectionSort.txt")) == 0) {
             memTest.DRAM[100] = 69;
             memTest.DRAM[101] = 65;
-            memTest.DRAM[102] = 103;
+            memTest.DRAM[102] = 64;
             memTest.DRAM[103] = 23;
-            memTest.DRAM[104] = 102;
+            memTest.DRAM[104] = 92;
         }
 
         return allInstructions;
