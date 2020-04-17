@@ -18,7 +18,7 @@ function refreshRegs (){
 	// add in each line to cache UI with a break character
 	// first set text to the empty string since we are repopulating the whole thing
 	for (var i = 0; i < regArr.length; i++){
-		self#regsCell.$append({regArr[i]}<br>);
+		self#regsCell.$append(<font color="blue">{i}: </font>{regArr[i]}<br>);
 	}
 	
 	numRegClicks++;
@@ -42,7 +42,7 @@ function refreshDram(){
 	
 	// add in each line to cache UI with a break character
 	for (var i = 0; i < dramArr.length; i++){
-		self#dramCell.$append({dramArr[i]}<br>);
+		self#dramCell.$append(<font color="blue">{i}: </font>{dramArr[i]}<br>);
 	}
 	
 	
@@ -57,7 +57,7 @@ function refreshCache(){
 	var cacheStr = view.grabDataFrom_Cache();
 
 	// convert cache string into array
-	var cacheArr = cacheStr.split(' ');
+	var cacheArr = cacheStr.split('X');
 	
 	// button click testing
 	if (numCacheClicks > 0){
@@ -67,7 +67,7 @@ function refreshCache(){
 
 	// add in each line to cache UI with a break character
 	for (var i = 0; i < cacheArr.length; i++){
-		self#cacheCell.$append({cacheArr[i]}<br>);
+		self#cacheCell.$append(<font color="blue">{i}: </font>{cacheArr[i]}<br>);
 	}
 	
 	numCacheClicks++;
@@ -108,8 +108,9 @@ $(button#uploadInstrBtn).onClick = function(){
 	  
 	  var instrctnsArr = allInstructions.split('X');
 	  self#instrctnsCell.text = "";
-	  for (var i = 0; i < instrctnsArr.length; i++){
-		self#instrctnsCell.$append({instrctnsArr[i]}<br>);
+	  // -2 in iterator there so exit instruction isn't printed
+	  for (var i = 0; i < instrctnsArr.length - 1; i++){
+		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr[i]}<br>);
 	  }
   }	
 };
@@ -146,11 +147,13 @@ $(button#runInstrs).onClick = function(){
   var instrctnsArr = allInstructions.split('X');
   var numSteps1 = self#numStepsToRun.text;
   self#instrctnsCell.text = "";
-  for (var i = 0; i < instrctnsArr.length; i++){
+  
+  // -1 in iterator there so exit instruction isn't printed
+  for (var i = 0; i < instrctnsArr.length - 1; i++){
 	if( 0 <= i && i < numSteps1){
-		self#instrctnsCell.$append(<font color="green">{instrctnsArr[i]}</font><br>);
+		self#instrctnsCell.$append(<font color="blue">{i}: </font><font color="green">{instrctnsArr[i]}</font><br>);
 	} else {
-		self#instrctnsCell.$append({instrctnsArr[i]}<br>);
+		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr[i]}<br>);
 	}
   }
   updateClock();

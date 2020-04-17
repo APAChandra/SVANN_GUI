@@ -24,6 +24,7 @@ public:
     // INITIAL SETUP OF MEMORY AND PIPELINE OBJECTS
     memory memTest;
     pipeline globalPipeline = pipeline(memTest); // reinitialize pipeTestObject
+    bool selecSortRan = false;
 
 
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS | SW_MAIN | SW_ENABLE_DEBUG) {}
@@ -48,9 +49,21 @@ public:
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 4; j++) {
                 for (int k = 0; k < 4; k++) {
-                    cacheStr += to_wstring(memTest.cache[i][j].word[k]);
+
+                    // add separator to make words in line visually distinct
+                    wstring separator;
+                    if (k == 3) {
+                        separator = WSTR("");
+                    }
+                    // do not add separator for last word in line
+                    else {
+                        separator = WSTR(", ");
+                    }
+                    cacheStr += to_wstring(memTest.cache[i][j].word[k]) + separator;
                 }
-                cacheStr += WSTR(" ");
+
+                // char 'X' is delimeter for .tis code to be able to parse out cachelines
+                cacheStr += WSTR("X");
             }
         }
 
@@ -221,7 +234,10 @@ public:
         //      - without it C++ will throw an error on the sysCall declaration
         std::string tmp = stdFileName;
         std::string sysCall = "python 535Assembler.py" + stdFileName;
-        system("python 535Assembler.py selectionSort.txt"); // won't work currently
+        if (selecSortRan == false){
+            system("python 535Assembler.py selectionSort.txt"); // won't work currently
+        }
+        
 
         // read binary instructions file and place instructions in DRAM
         std::string binInstrs = "";
@@ -254,7 +270,7 @@ public:
             memTest.registers[7] = 2;
             memTest.registers[8] = 3;
         }
-        else if (fileNameWStr.compare(WSTR("selectionSort.txt")) == 0) {
+        else if (fileNameWStr.compare(WSTR("selectionSort.txt")) == 0 && selecSortRan == false) {
             memTest.DRAM[100] = 69;
             memTest.DRAM[101] = 65;
             memTest.DRAM[102] = 64;
@@ -370,7 +386,10 @@ public:
     }
 
     sciter::string runInstsructionsFor(sciter::value scitInstrsArgs) {
+        // this will need to be moved to memTest initialization
         memTest.instructionsStart = 0; // assume instructions are at beginning of DRAM for now
+
+
         globalPipeline = pipeline(memTest); // refresh pipeline object
 
         // convert sciter value to string
@@ -394,6 +413,7 @@ public:
         // run pipeline
         if (pipeBool) {
             memTest = globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
+            selecSortRan = true;
         }
         else {
             memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);

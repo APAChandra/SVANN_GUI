@@ -57,7 +57,7 @@ def get_binary_of(instr):
             instrRegs.append(binRegNum)
         elif len(param) > 1 and param[1] == 'x':
             immedValHex = param
-    print(instrRegs)
+    #print(instrRegs)
 
     # grab special compare params if CMP instruction
     if instrName == "CMP":
@@ -107,8 +107,8 @@ binaryStr = ""
 with open(assemblyFile, "r") as a_file:
     for line in a_file:
         stripped_line = line.strip()
-        print('assembly line:', stripped_line)
-        print('binary line: ', get_binary_of(stripped_line))
+        #print('assembly line:', stripped_line)
+        #print('binary line: ', get_binary_of(stripped_line))
         binaryStr += get_binary_of(stripped_line) + "\n"
         # add in exit instruction
     binaryStr += "1110000000000000000000000000000000000000000000000000000000000000\n"
