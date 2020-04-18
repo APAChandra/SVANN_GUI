@@ -39,7 +39,7 @@ class memory {
 		cacheLine cache[16][4];
 
         // Book Keepers to know where instructions are
-        int instructionsStart;
+        int instructionsStart = 0; // assume instructions always start at 0
         int instructionsEnd;
 
         // simple binary to decimal function

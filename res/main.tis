@@ -141,7 +141,7 @@ $(button#runInstrs).onClick = function(){
   numSteps = numSteps.concat(cacheBool);
   numSteps = numSteps.concat(pipeBool);
   
-  var __ = view.runInstsructionsFor(numSteps); // return is junk right now
+  var __ = view.runInstsructionsFor(numSteps); // return is junk
   var instrFileName = self#filePathField.text
   var allInstructions = view.uploadInstructionsFile(instrFileName);
   var instrctnsArr = allInstructions.split('X');
@@ -157,4 +157,32 @@ $(button#runInstrs).onClick = function(){
 	}
   }
   updateClock();
+};
+
+$(button#singleStep).onClick = function(){
+  var numSteps = "1";
+  var cacheBool = "cacheBool_0";
+  var pipeBool = "pipeBool_0";
+  if (self#cacheCheckBox.state.checked == true){
+	cacheBool = "cacheBool_1";  
+  }
+  
+  if (self#pipeLineCheckBox.state.checked == true){
+	cacheBool = "pipeBool_1";  
+  }
+  
+  numSteps = numSteps.concat(cacheBool);
+  numSteps = numSteps.concat(pipeBool);
+  
+  var __ = view.runInstsructionsFor(numSteps); // return is junk
+  
+  
+  self#instrctnsCell.$append(<font color="orange">single step click gang</font><br>);
+  
+  // update all non-control panels
+  refreshRegs();
+  refreshDram();
+  refreshCache();
+  updateClock();
+  
 };

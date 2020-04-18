@@ -386,10 +386,6 @@ public:
     }
 
     sciter::string runInstsructionsFor(sciter::value scitInstrsArgs) {
-        // this will need to be moved to memTest initialization
-        memTest.instructionsStart = 0; // assume instructions are at beginning of DRAM for now
-
-
         globalPipeline = pipeline(memTest); // refresh pipeline object
 
         // convert sciter value to string

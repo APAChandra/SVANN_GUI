@@ -331,6 +331,19 @@ public:
 
 	memory runPipeline(int startAddr, int endAddr) {
 		mem.registers[1] = startAddr;
+
+		// if the instruction at endAddr is not already the exit instruction,
+		// temporarily place an exit instruction at endAddr
+		long long int tempInstr;
+		if (mem.DRAM[endAddr] != -2305843009213693952) {
+			// save instruction that sits there so it can be replaced later
+			tempInstr = mem.DRAM[endAddr];
+			mem.DRAM[endAddr] = -2305843009213693952;
+		}
+		else {
+			tempInstr = -2305843009213693952;
+		}
+
 		IF();
 		clock++;
 		ID();
@@ -352,6 +365,9 @@ public:
 				clock++;
 			}
 		}
+
+		// perform instruction replacement for exit instruction
+		mem.DRAM[endAddr] = tempInstr;
 
 		return mem;
 	}
