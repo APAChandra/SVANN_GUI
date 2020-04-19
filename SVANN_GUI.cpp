@@ -246,7 +246,6 @@ public:
         std::string binInstrFileName = stdFileName.substr(0, stdFileName.length() - 4) + "Binary.txt";
         ifstream binInstrFile(binInstrFileName);
         int i = 0;
-        memTest.instructionsStart = 0;
         if (binInstrFile.is_open())
         {
             while (getline(binInstrFile, assemInsrLine))
@@ -274,8 +273,8 @@ public:
             memTest.DRAM[100] = 69;
             memTest.DRAM[101] = 65;
             memTest.DRAM[102] = 64;
-            memTest.DRAM[103] = 23;
-            memTest.DRAM[104] = 92;
+            //memTest.DRAM[103] = 23;
+            //memTest.DRAM[104] = 92;
         }
 
         return allInstructions;
@@ -403,28 +402,36 @@ public:
         }
         int numSteps = stoi(instrsArgs.substr(0, cacheBoolStrt));
 
-        // tell pipeline where to stop
-        memTest.instructionsEnd = memTest.instructionsStart + numSteps;
+        // save current instructions start so we can check if a jump took place
+        int tmpInstrStrt = memTest.instructionsStart;
 
         // run pipeline
         if (pipeBool) {
-            memTest = globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
+            memTest = globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsStart + numSteps);
             selecSortRan = true;
         }
         else {
-            memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
+            memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsStart + numSteps);
         }
         
-        
+        // compare saved instruction start to new instruction start to check for jumps
+        wstring curInstr = WSTR("");
+        if (memTest.instructionsStart < tmpInstrStrt) { // assumes jumps always go backwards!
+            curInstr = to_wstring(memTest.registers[1] - 1);
+        }
+        else {
+            curInstr = to_wstring(memTest.registers[1] - 2);
+        }
+
         // previous instructions have now been ran
-        memTest.instructionsStart += numSteps;
+        //memTest.instructionsStart += numSteps; <-- variable now updated in pipeline
 
         // reset instructions start once all have been ran
         if (memTest.instructionsStart == memTest.instructionsEnd) {
             memTest.instructionsStart = 0;
         }
 
-        return WSTR("");
+        return curInstr;
     }
 
     // This function is probably broken right now

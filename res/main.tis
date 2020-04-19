@@ -174,9 +174,28 @@ $(button#singleStep).onClick = function(){
   numSteps = numSteps.concat(cacheBool);
   numSteps = numSteps.concat(pipeBool);
   
-  var __ = view.runInstsructionsFor(numSteps); // return is junk
+  var curInstr = view.runInstsructionsFor(numSteps);
   
   
+  var curInstrInt = curInstr.toInteger();
+  
+    // instruction coloring
+  var instrFileName1 = self#filePathField.text
+  var allInstructions1 = view.uploadInstructionsFile(instrFileName1);
+  var instrctnsArr1 = allInstructions1.split('X');
+  self#instrctnsCell.text = "";
+  
+  // -1 in iterator there so exit instruction isn't printed
+  for (var i = 0; i < instrctnsArr1.length - 1; i++){
+	if( 0 <= i && i < curInstrInt + 1){ // this  +1 should be handled in cpp
+		self#instrctnsCell.$append(<font color="blue">{i}: </font><font color="green">{instrctnsArr1[i]}</font><br>);
+	} else {
+		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr1[i]}<br>);
+	}
+  }
+  updateClock();
+  
+  // debugging... can remove this if instruction coloring works
   self#instrctnsCell.$append(<font color="orange">single step click gang</font><br>);
   
   // update all non-control panels
