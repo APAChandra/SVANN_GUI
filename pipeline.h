@@ -16,8 +16,8 @@ public:
 	long long int ALUo;
 	int opcode;
 	int type;
-	int A, B, C;
-	int Awb, Bwb, Cwb;
+	int A, B, C, D, E;
+	int Awb, Bwb, Cwb, Dwb, Ewb;
 	int cbit;
 	int cbit2;
 	int cbitwb;
@@ -152,7 +152,7 @@ public:
 	}
 
 	void EX() {
-		A = reg[0]; B = reg[1]; C = reg[2]; cbit2 = cbit; typemem = type; opcodemem = opcode;
+		A = reg[0]; B = reg[1]; C = reg[2]; D = reg[3]; E = reg[4]; cbit2 = cbit; typemem = type; opcodemem = opcode;
 		if (type == 7) {
 			next = 4;
 			return;
@@ -209,6 +209,26 @@ public:
 			else if (type == 1) {
 				switch (opcode)
 				{
+				case 0:
+					ALUo = mem.registers[reg[1]];
+					//TODO
+					//Figure out RAW Hazards for scratchpad
+					break;
+				case 1:
+					ALUo = mem.registers[reg[1]];
+					//TODO
+					//Figure out RAW Hazards for scratchpad
+					break;
+				case 10:
+					ALUo = mem.registers[reg[1]] * mem.registers[reg[2]];
+					//TODO
+					//Figure out RAW Hazards for scratchpad
+					break;
+				case 11:
+					ALUo = mem.registers[reg[1]]*mem.registers[reg[2]];
+					//TODO
+					//Figure out RAW Hazards for scratchpad
+					break;
 				case 7:
 					ALUo = mem.registers[reg[1]] + Imm;
 					regHaz[reg[0]] = true;
@@ -239,7 +259,7 @@ public:
 	}
 
 	void MEM() {
-		Awb = A; Bwb = B; Cwb = C; cbitwb = cbit2; ALUowb = ALUo; typewb = typemem; opcodewb = opcodemem;
+		Awb = A; Bwb = B; Cwb = C; Dwb = D; Ewb = E; cbitwb = cbit2; ALUowb = ALUo; typewb = typemem; opcodewb = opcodemem;
 		if (typemem == 7) {
 			next = 4;
 			return;
@@ -248,6 +268,18 @@ public:
 			if (typemem == 1) {
 				switch (opcodemem)
 				{
+				case 0:
+					mem.spadLoad(mem.registers[C], mem.registers[A], ALUo);
+					break;
+				case 1:
+					mem.spadStore(mem.registers[A], mem.registers[C], ALUo);
+					break;
+				case 10:
+					mem.spadLoad(mem.registers[C], mem.registers[A], ALUo);
+					break;
+				case 11:
+					mem.spadStore(mem.registers[A], mem.registers[C], ALUo);
+					break;
 				case 7:
 					if (cache == false) {
 						mem.registers[mem.registers[A]] = mem.DRAM[ALUo];
