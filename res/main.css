@@ -2,17 +2,16 @@
     width: 98vw;
 }
 
-#instrctnsCell, #regsCell, #contrlPnlCell {
+#instrctnsCell, #contrlPnlCell {
     vertical-align: top;
     height: 92vh;
     overflow-y: scroll;
 }
 
-#dramCell, #cacheCell {
+#dramCell, #cacheCell, #regsCell, #spadCell {
     vertical-align: top;
     height: 35vh;
     overflow-y: scroll;
-    overflow-x: scroll;
 }
 
 .cntntCell {

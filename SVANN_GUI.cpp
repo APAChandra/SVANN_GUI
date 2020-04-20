@@ -33,6 +33,7 @@ public:
     BEGIN_FUNCTION_MAP
         FUNCTION_0("grabDataFrom_Cache", grabDataFrom_Cache);
         FUNCTION_0("grabDataFrom_DRAM", grabDataFrom_DRAM);
+        FUNCTION_0("grabDataFrom_SPAD", grabDataFrom_SPAD);
         FUNCTION_0("grabDataFrom_Registers", grabDataFrom_Registers);
         FUNCTION_1("uploadInstructionsFile", uploadInstructionsFile);
         FUNCTION_1("saveProgState", saveProgState);
@@ -166,6 +167,104 @@ public:
         }
 
         return dramStr;
+    }
+
+    sciter::string grabDataFrom_SPAD() {
+
+        // all words from cache and place them in a string
+        // return the string to .tis and create array based on delimeters
+        sciter::string spadStr = WSTR("");
+        for (int i = 0; i < 256; i++) {
+            // convert binary long long int to wstring
+            wstring str(64, '0');
+            for (int j = 0; j < 64; j++)
+            {
+                if ((1ll << j) & memTest.SPAD[i])
+                    str[63 - j] = '1';
+            }
+
+            // convert binary string to hex string
+            wstring sBinary = str;
+            wstring rest(WSTR("0x")), tmp, chr = WSTR("0000");
+            int len = sBinary.length() / 4;
+            chr = chr.substr(0, len);
+            sBinary = chr + sBinary;
+            for (int i = 0; i < sBinary.length(); i += 4)
+            {
+                tmp = sBinary.substr(i, 4);
+                if (!tmp.compare(WSTR("0000")))
+                {
+                    rest = rest + WSTR("0");
+                }
+                else if (!tmp.compare(WSTR("0001")))
+                {
+                    rest = rest + WSTR("1");
+                }
+                else if (!tmp.compare(WSTR("0010")))
+                {
+                    rest = rest + WSTR("2");
+                }
+                else if (!tmp.compare(WSTR("0011")))
+                {
+                    rest = rest + WSTR("3");
+                }
+                else if (!tmp.compare(WSTR("0100")))
+                {
+                    rest = rest + WSTR("4");
+                }
+                else if (!tmp.compare(WSTR("0101")))
+                {
+                    rest = rest + WSTR("5");
+                }
+                else if (!tmp.compare(WSTR("0110")))
+                {
+                    rest = rest + WSTR("6");
+                }
+                else if (!tmp.compare(WSTR("0111")))
+                {
+                    rest = rest + WSTR("7");
+                }
+                else if (!tmp.compare(WSTR("1000")))
+                {
+                    rest = rest + WSTR("8");
+                }
+                else if (!tmp.compare(WSTR("1001")))
+                {
+                    rest = rest + WSTR("9");
+                }
+                else if (!tmp.compare(WSTR("1010")))
+                {
+                    rest = rest + WSTR("A");
+                }
+                else if (!tmp.compare(WSTR("1011")))
+                {
+                    rest = rest + WSTR("B");
+                }
+                else if (!tmp.compare(WSTR("1100")))
+                {
+                    rest = rest + WSTR("C");
+                }
+                else if (!tmp.compare(WSTR("1101")))
+                {
+                    rest = rest + WSTR("D");
+                }
+                else if (!tmp.compare(WSTR("1110")))
+                {
+                    rest = rest + WSTR("E");
+                }
+                else if (!tmp.compare(WSTR("1111")))
+                {
+                    rest = rest + WSTR("F");
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            spadStr += rest + WSTR(" ");
+        }
+
+        return spadStr;
     }
 
     sciter::string grabDataFrom_Registers() {
