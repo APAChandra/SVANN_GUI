@@ -27,6 +27,8 @@ public:
 	bool regHaz[64];
 	bool FUstate[5];
 	bool branch;
+	bool singleStepBranch = false; // bool added to check if jump occured during single step
+	bool branchSkipped = false; // bool added to check if jump skipped during single step (possibly redundant)
 	bool RAW;
 	bool cond;
 	int condind;
@@ -118,6 +120,13 @@ public:
 		for (int i = 0; i < 5; i++) {
 			reg[i] = bitExtracted(IR, 9 + (i * 6), 6);
 		}
+
+		// debugging, trying to detecht when a jump is NOT taken
+		int z = 0;
+		if (cbit == 1 && type == 0 && mem.registers[3] == 0) {
+			branchSkipped = true;
+		}
+
 		if (regHaz[reg[0]] || regHaz[reg[1]]) {
 			RAW = true;
 			RAWind = npc;
@@ -214,6 +223,7 @@ public:
 			}
 			else if (type == 0) {
 				mem.registers[1] = (npc - 1) + Imm;
+				singleStepBranch = true;
 				ins_track.pop_back();
 				IF();
 				return;
@@ -330,7 +340,25 @@ public:
 	}
 
 	memory runPipeline(int startAddr, int endAddr) {
+		int y = 0;
+		if (startAddr == 10) {
+			y++;
+		}
+
 		mem.registers[1] = startAddr;
+
+		// if the instruction at endAddr is not already the exit instruction,
+		// temporarily place an exit instruction at endAddr
+		long long int tempInstr;
+		if (mem.DRAM[endAddr] != -2305843009213693952) {
+			// save instruction that sits there so it can be replaced later
+			tempInstr = mem.DRAM[endAddr];
+			mem.DRAM[endAddr] = -2305843009213693952;
+		}
+		else {
+			tempInstr = -2305843009213693952;
+		}
+
 		IF();
 		clock++;
 		ID();
@@ -340,6 +368,22 @@ public:
 		MEM();
 		clock++;
 		WB();
+
+		// if a single step is being taken AND a jump has just occured,
+		// we want to return immediately
+		if (startAddr = endAddr + 1 && singleStepBranch) {
+			// perform exit instruction replacement now
+			mem.DRAM[endAddr] = tempInstr;
+
+			// set instructions start and end for GUI relative to current PC
+			mem.instructionsStart = mem.registers[1] - 3;
+
+			// this might break a few things...
+			mem.registers[1] = mem.registers[1] - 3;
+
+			return mem;
+		}
+
 		while (next != 4) {
 			if (next == 1) {
 				MEM();
@@ -351,6 +395,24 @@ public:
 				WB();
 				clock++;
 			}
+		}
+
+		// perform instruction replacement for exit instruction
+		mem.DRAM[endAddr] = tempInstr;
+
+		// set instructions start for GUI relative to current PC
+		// if jump instruction has been skipped and single stepping, we're not off by one (why?)
+		if (startAddr = endAddr + 1 && branchSkipped) {
+			mem.instructionsStart = mem.registers[1];
+		}
+		else {
+			mem.instructionsStart = mem.registers[1] - 1;
+		}
+
+		// debugging
+		int x = 0;
+		if (cbit == 1 && mem.registers[3] == 0) {
+			x++;
 		}
 
 		return mem;

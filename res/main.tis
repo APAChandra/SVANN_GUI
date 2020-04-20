@@ -18,7 +18,7 @@ function refreshRegs (){
 	// add in each line to cache UI with a break character
 	// first set text to the empty string since we are repopulating the whole thing
 	for (var i = 0; i < regArr.length; i++){
-		self#regsCell.$append({regArr[i]}<br>);
+		self#regsCell.$append(<font color="blue">{i}: </font>{regArr[i]}<br>);
 	}
 	
 	numRegClicks++;
@@ -42,7 +42,7 @@ function refreshDram(){
 	
 	// add in each line to cache UI with a break character
 	for (var i = 0; i < dramArr.length; i++){
-		self#dramCell.$append({dramArr[i]}<br>);
+		self#dramCell.$append(<font color="blue">{i}: </font>{dramArr[i]}<br>);
 	}
 	
 	
@@ -57,7 +57,7 @@ function refreshCache(){
 	var cacheStr = view.grabDataFrom_Cache();
 
 	// convert cache string into array
-	var cacheArr = cacheStr.split(' ');
+	var cacheArr = cacheStr.split('X');
 	
 	// button click testing
 	if (numCacheClicks > 0){
@@ -67,7 +67,7 @@ function refreshCache(){
 
 	// add in each line to cache UI with a break character
 	for (var i = 0; i < cacheArr.length; i++){
-		self#cacheCell.$append({cacheArr[i]}<br>);
+		self#cacheCell.$append(<font color="blue">{i}: </font>{cacheArr[i]}<br>);
 	}
 	
 	numCacheClicks++;
@@ -108,8 +108,9 @@ $(button#uploadInstrBtn).onClick = function(){
 	  
 	  var instrctnsArr = allInstructions.split('X');
 	  self#instrctnsCell.text = "";
-	  for (var i = 0; i < instrctnsArr.length; i++){
-		self#instrctnsCell.$append({instrctnsArr[i]}<br>);
+	  // -2 in iterator there so exit instruction isn't printed
+	  for (var i = 0; i < instrctnsArr.length - 1; i++){
+		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr[i]}<br>);
 	  }
   }	
 };
@@ -140,18 +141,67 @@ $(button#runInstrs).onClick = function(){
   numSteps = numSteps.concat(cacheBool);
   numSteps = numSteps.concat(pipeBool);
   
-  var __ = view.runInstsructionsFor(numSteps); // return is junk right now
+  var __ = view.runInstsructionsFor(numSteps); // return is junk
   var instrFileName = self#filePathField.text
   var allInstructions = view.uploadInstructionsFile(instrFileName);
   var instrctnsArr = allInstructions.split('X');
   var numSteps1 = self#numStepsToRun.text;
   self#instrctnsCell.text = "";
-  for (var i = 0; i < instrctnsArr.length; i++){
+  
+  // -1 in iterator there so exit instruction isn't printed
+  for (var i = 0; i < instrctnsArr.length - 1; i++){
 	if( 0 <= i && i < numSteps1){
-		self#instrctnsCell.$append(<font color="green">{instrctnsArr[i]}</font><br>);
+		self#instrctnsCell.$append(<font color="blue">{i}: </font><font color="green">{instrctnsArr[i]}</font><br>);
 	} else {
-		self#instrctnsCell.$append({instrctnsArr[i]}<br>);
+		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr[i]}<br>);
 	}
   }
   updateClock();
+};
+
+$(button#singleStep).onClick = function(){
+  var numSteps = "1";
+  var cacheBool = "cacheBool_0";
+  var pipeBool = "pipeBool_0";
+  if (self#cacheCheckBox.state.checked == true){
+	cacheBool = "cacheBool_1";  
+  }
+  
+  if (self#pipeLineCheckBox.state.checked == true){
+	cacheBool = "pipeBool_1";  
+  }
+  
+  numSteps = numSteps.concat(cacheBool);
+  numSteps = numSteps.concat(pipeBool);
+  
+  var curInstr = view.runInstsructionsFor(numSteps);
+  
+  
+  var curInstrInt = curInstr.toInteger();
+  
+    // instruction coloring
+  var instrFileName1 = self#filePathField.text
+  var allInstructions1 = view.uploadInstructionsFile(instrFileName1);
+  var instrctnsArr1 = allInstructions1.split('X');
+  self#instrctnsCell.text = "";
+  
+  // -1 in iterator there so exit instruction isn't printed
+  for (var i = 0; i < instrctnsArr1.length - 1; i++){
+	if( 0 <= i && i < curInstrInt + 1){ // this  +1 should be handled in cpp
+		self#instrctnsCell.$append(<font color="blue">{i}: </font><font color="green">{instrctnsArr1[i]}</font><br>);
+	} else {
+		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr1[i]}<br>);
+	}
+  }
+  updateClock();
+  
+  // debugging... can remove this if instruction coloring works
+  self#instrctnsCell.$append(<font color="orange">single step click gang</font><br>);
+  
+  // update all non-control panels
+  refreshRegs();
+  refreshDram();
+  refreshCache();
+  updateClock();
+  
 };

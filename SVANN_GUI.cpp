@@ -24,6 +24,7 @@ public:
     // INITIAL SETUP OF MEMORY AND PIPELINE OBJECTS
     memory memTest;
     pipeline globalPipeline = pipeline(memTest); // reinitialize pipeTestObject
+    bool selecSortRan = false;
 
 
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS | SW_MAIN | SW_ENABLE_DEBUG) {}
@@ -48,9 +49,21 @@ public:
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 4; j++) {
                 for (int k = 0; k < 4; k++) {
-                    cacheStr += to_wstring(memTest.cache[i][j].word[k]);
+
+                    // add separator to make words in line visually distinct
+                    wstring separator;
+                    if (k == 3) {
+                        separator = WSTR("");
+                    }
+                    // do not add separator for last word in line
+                    else {
+                        separator = WSTR(", ");
+                    }
+                    cacheStr += to_wstring(memTest.cache[i][j].word[k]) + separator;
                 }
-                cacheStr += WSTR(" ");
+
+                // char 'X' is delimeter for .tis code to be able to parse out cachelines
+                cacheStr += WSTR("X");
             }
         }
 
@@ -221,7 +234,10 @@ public:
         //      - without it C++ will throw an error on the sysCall declaration
         std::string tmp = stdFileName;
         std::string sysCall = "python 535Assembler.py" + stdFileName;
-        system("python 535Assembler.py selectionSort.txt"); // won't work currently
+        if (selecSortRan == false){
+            system("python 535Assembler.py selectionSort.txt"); // won't work currently
+        }
+        
 
         // read binary instructions file and place instructions in DRAM
         std::string binInstrs = "";
@@ -230,7 +246,6 @@ public:
         std::string binInstrFileName = stdFileName.substr(0, stdFileName.length() - 4) + "Binary.txt";
         ifstream binInstrFile(binInstrFileName);
         int i = 0;
-        memTest.instructionsStart = 0;
         if (binInstrFile.is_open())
         {
             while (getline(binInstrFile, assemInsrLine))
@@ -254,12 +269,12 @@ public:
             memTest.registers[7] = 2;
             memTest.registers[8] = 3;
         }
-        else if (fileNameWStr.compare(WSTR("selectionSort.txt")) == 0) {
+        else if (fileNameWStr.compare(WSTR("selectionSort.txt")) == 0 && selecSortRan == false) {
             memTest.DRAM[100] = 69;
             memTest.DRAM[101] = 65;
             memTest.DRAM[102] = 64;
-            memTest.DRAM[103] = 23;
-            memTest.DRAM[104] = 92;
+            //memTest.DRAM[103] = 23;
+            //memTest.DRAM[104] = 92;
         }
 
         return allInstructions;
@@ -370,7 +385,6 @@ public:
     }
 
     sciter::string runInstsructionsFor(sciter::value scitInstrsArgs) {
-        memTest.instructionsStart = 0; // assume instructions are at beginning of DRAM for now
         globalPipeline = pipeline(memTest); // refresh pipeline object
 
         // convert sciter value to string
@@ -388,27 +402,36 @@ public:
         }
         int numSteps = stoi(instrsArgs.substr(0, cacheBoolStrt));
 
-        // tell pipeline where to stop
-        memTest.instructionsEnd = memTest.instructionsStart + numSteps;
+        // save current instructions start so we can check if a jump took place
+        int tmpInstrStrt = memTest.instructionsStart;
 
         // run pipeline
         if (pipeBool) {
-            memTest = globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsEnd);
+            memTest = globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsStart + numSteps);
+            selecSortRan = true;
         }
         else {
-            memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsEnd);
+            memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsStart + numSteps);
         }
         
-        
+        // compare saved instruction start to new instruction start to check for jumps
+        wstring curInstr = WSTR("");
+        if (memTest.instructionsStart < tmpInstrStrt) { // assumes jumps always go backwards!
+            curInstr = to_wstring(memTest.registers[1] - 1);
+        }
+        else {
+            curInstr = to_wstring(memTest.registers[1] - 2);
+        }
+
         // previous instructions have now been ran
-        memTest.instructionsStart += numSteps;
+        //memTest.instructionsStart += numSteps; <-- variable now updated in pipeline
 
         // reset instructions start once all have been ran
         if (memTest.instructionsStart == memTest.instructionsEnd) {
             memTest.instructionsStart = 0;
         }
 
-        return WSTR("");
+        return curInstr;
     }
 
     // This function is probably broken right now
