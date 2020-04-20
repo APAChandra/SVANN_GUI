@@ -26,6 +26,9 @@ class memory {
         // DRAM is a one-dimensional array of words (long long ints)
         long long int DRAM[256];
 
+        // ScratchPad is a one-dimensional array of words (long long ints)
+        long long int SPAD[256];
+
         // registers are an array of strings
         // words are loaded and stored as strings
         // this is so we can subindex into them for instruction params
@@ -359,6 +362,26 @@ class memory {
             for (int i = 0; i < 256; i++) {
                 DRAM[i] = 0000000000000000000000000000000000000000000000000000000000000000;
             }
+
+            // fill SPAD with all 0's
+            for (int i = 0; i < 256; i++) {
+                SPAD[i] = 0000000000000000000000000000000000000000000000000000000000000000;
+            }
+        }
+
+        //Scratchpad Load:
+        void spadLoad(int beginDram, int beginSpad, int size) {
+            for (int i = 0; i < size; i++) {
+                SPAD[beginSpad + i] = DRAM[beginDram + i];
+            }
+
+        }
+
+        void spadStore(int beginDram, int beginSpad, int size) {
+            for (int i = 0; i < size; i++) {
+                DRAM[beginDram + i] = SPAD[beginSpad + i];
+            }
+
         }
 
 }
