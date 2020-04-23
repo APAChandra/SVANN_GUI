@@ -39,6 +39,7 @@ public:
         FUNCTION_1("saveProgState", saveProgState);
         FUNCTION_1("readInProgState", readInProgState);
         FUNCTION_0("getClockCount", getClockCount);
+        FUNCTION_0("getInstrStartEnd", getInstrStartEnd);
         FUNCTION_1("runInstsructionsFor", runInstsructionsFor);
     END_FUNCTION_MAP
 
@@ -409,6 +410,9 @@ public:
             progStateFile << "\n";
         }
 
+        // Finally, serialize instructions start/end
+        progStateFile << memTest.instructionsStart << "_" << memTest.instructionsEnd;
+
         // Everything in the memory object should now be serialized to that .txt file
         progStateFile.close();
 
@@ -475,12 +479,19 @@ public:
                         cacheSet = cacheSet.substr(curCacheLineEndPos, restOfCacheSetLen);
                     }
                 }
+                else {
+                    int underscorePos = progStateLine.find(WSTR("_"));
+                    int instrStrt = stoi(progStateLine.substr(0,underscorePos));
+                    int instrEnd = stoi(progStateLine.substr(underscorePos + 1, progStateLine.length() - underscorePos));
+                    memTest.instructionsStart = instrStrt;
+                    memTest.instructionsEnd = instrEnd;
+                }
                 i++; // don't forget to increment your variables, kids!
             }
             progStateFile.close();
         }
 
-        return fileNameWStr;
+        return to_wstring(memTest.instructionsStart) + WSTR("_") + to_wstring(memTest.instructionsEnd);
     }
 
     sciter::string runInstsructionsFor(sciter::value scitInstrsArgs) {
@@ -537,6 +548,10 @@ public:
     // most likely is behind on actual clockcount
     sciter::string getClockCount() {
         return to_wstring(globalPipeline.clock);
+    }
+
+    sciter::string getInstrStartEnd() {
+        return to_wstring(memTest.instructionsStart) + WSTR("_") + to_wstring(memTest.instructionsEnd);
     }
 };
 
