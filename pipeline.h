@@ -4,12 +4,16 @@
 #include <string>
 #include "memory.h"
 #include <deque>
+#include <math.h>
 
 class pipeline {
 public:
 
 	memory mem;
-	deque <int> ins_track;
+	deque <long long int> ins_track;
+	deque <long long int> spadTrack;
+	vector <long long int> ALUom;
+	vector <long long int> ALUomwb;
 	long long int reg[5];
 	long long int Imm;
 	long long int IR;
@@ -81,8 +85,24 @@ public:
 	171 is represented as 0101011 in binary,
 	so, you should get only 10101 i.e. 21.*/
 
-	int secElem(deque<int> x) {
-		deque<int> y(x);
+	bool checkRangeHazard(int startAdress, int size) {
+		int endAddr = startAdress + size;
+		if (spadTrack.size() > 0) {
+			for (int i = 0; i < spadTrack.size(); i+=2) {
+				if ((endAddr < spadTrack[i+1] && endAddr > spadTrack[i]) || 
+					(startAdress > spadTrack[i] && startAdress < spadTrack[i+1]) ||
+					(startAdress < spadTrack[i] && endAddr > spadTrack[i+1])) {
+					return false;
+				}
+			}
+				
+		}
+
+		return true;
+	}
+
+	int secElem(deque<long long int> x) {
+		deque<long long int> y(x);
 		if (x.size() >= 2) {
 			int a = y.front();
 			y.pop_front();
@@ -125,6 +145,61 @@ public:
 		int z = 0;
 		if (cbit == 1 && type == 0 && mem.registers[3] == 0) {
 			branchSkipped = true;
+		}
+
+		if (type == 1 && opcode == 1) {
+			if (regHaz[reg[0]] || regHaz[reg[1]] || regHaz[reg[2]] || regHaz[reg[3]]) {
+				RAW = true;
+				RAWind = npc;
+			}
+			if (checkRangeHazard(mem.registers[reg[3]], mem.registers[reg[1]] * mem.registers[reg[2]])) {
+				RAW = true;
+				RAWind = npc;
+			}
+		}
+
+		if (type == 4 && (opcode == 1 || opcode == 2)) {
+			if (regHaz[reg[0]] || regHaz[reg[1]] || regHaz[reg[2]] || regHaz[reg[3]] || regHaz[reg[4]]) {
+				RAW = true;
+				RAWind = npc;
+			}
+
+			if (checkRangeHazard(mem.registers[reg[2]], mem.registers[reg[1]] * mem.registers[reg[4]])) {
+				RAW = true;
+				RAWind = npc;
+			}
+			if (checkRangeHazard(mem.registers[reg[3]], mem.registers[reg[4]])) {
+				RAW = true;
+				RAWind = npc;
+			}
+		}
+
+		if (type == 4 && (opcode == 6 || opcode == 7 || opcode == 8 || opcode == 9 )) {
+			if (regHaz[reg[0]] || regHaz[reg[1]] || regHaz[reg[2]] || regHaz[reg[3]]) {
+				RAW = true;
+				RAWind = npc;
+			}
+
+			if (checkRangeHazard(mem.registers[reg[1]], mem.registers[reg[2]])) {
+				RAW = true;
+				RAWind = npc;
+			}
+			if (checkRangeHazard(mem.registers[reg[3]], mem.registers[reg[2]])) {
+				RAW = true;
+				RAWind = npc;
+			}
+		}
+
+		if (type == 4 && (opcode == 10 || opcode == 11 || opcode == 12 || opcode == 13)) {
+			if (regHaz[reg[0]] || regHaz[reg[1]] || regHaz[reg[2]] || regHaz[reg[3]]) {
+				RAW = true;
+				RAWind = npc;
+			}
+
+			if (checkRangeHazard(mem.registers[reg[1]], mem.registers[reg[2]])) {
+				RAW = true;
+				RAWind = npc;
+			}
 		}
 
 		if (regHaz[reg[0]] || regHaz[reg[1]]) {
@@ -213,19 +288,29 @@ public:
 					ALUo = mem.registers[reg[1]];
 					//TODO
 					//Figure out RAW Hazards for scratchpad
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back( mem.registers[A] + mem.registers[B] );
 					break;
 				case 1:
 					ALUo = mem.registers[reg[1]];
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[B]);
 					//TODO
 					//Figure out RAW Hazards for scratchpad
 					break;
 				case 10:
 					ALUo = mem.registers[reg[1]] * mem.registers[reg[2]];
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[B] * mem.registers[C]);
+					//spadTrack.push_back({ mem.registers[A], mem.registers[A] + (mem.registers[B] * mem.registers[C])});
 					//TODO
 					//Figure out RAW Hazards for scratchpad
 					break;
 				case 11:
 					ALUo = mem.registers[reg[1]]*mem.registers[reg[2]];
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[B] * mem.registers[C]);
+					//spadTrack.push_back({ mem.registers[A], mem.registers[A] + (mem.registers[B] * mem.registers[C]) });
 					//TODO
 					//Figure out RAW Hazards for scratchpad
 					break;
@@ -248,6 +333,93 @@ public:
 				IF();
 				return;
 			}
+			else if (type == 4) {
+				switch (opcode) 
+				{
+				case 0:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[B]; i++) {
+						int value = 0;
+						for (int j = 0; j < mem.registers[E]; j++) {
+							value += mem.SPAD[(mem.registers[C] + i * mem.registers[B]) + j] * mem.SPAD[mem.registers[D]+j];
+						}
+						ALUom.push_back(value);
+					}
+				
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[B]);
+					break;
+				case 6:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[C];i++) {
+						ALUom.push_back(mem.SPAD[mem.registers[B]+i]+ mem.SPAD[mem.registers[D] + i]);
+					}
+					spadTrack.push_back(mem.registers[A]); 
+					spadTrack.push_back(mem.registers[A] + mem.registers[C]);
+					break;
+				case 7:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[C]; i++) {
+						ALUom.push_back(mem.SPAD[mem.registers[B] + i] - mem.SPAD[mem.registers[D] + i]);
+					}
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[C]);
+					break;
+				case 8:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[C]; i++) {
+						ALUom.push_back(mem.SPAD[mem.registers[B] + i] * mem.SPAD[mem.registers[D] + i]);
+					}
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[C]);
+					break;
+				case 9:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[C]; i++) {
+						ALUom.push_back(mem.SPAD[mem.registers[B] + i] / mem.SPAD[mem.registers[D] + i]);
+					}
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[C]);
+					break;
+				case 10:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[C]; i++) {
+						ALUom.push_back(pow((double)mem.SPAD[mem.registers[B] + i], (double)mem.registers[D]));
+					}
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[C]);
+					break;
+				case 11:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[C]; i++) {
+						ALUom.push_back(log((double)mem.SPAD[mem.registers[B] + i])/ log((double)mem.registers[D]));
+					}
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[C]);
+					break;
+				case 12:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[C]; i++) {
+						ALUom.push_back(log((double)mem.SPAD[mem.registers[B] + i]) + ((double)mem.registers[D])+Imm);
+					}
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[C]);
+					break;
+				case 13:
+					ALUom.clear();
+					for (int i = 0; i < mem.registers[C]; i++) {
+						ALUom.push_back(exp((double)mem.SPAD[mem.registers[B] + i])+Imm);
+					}
+					spadTrack.push_back(mem.registers[A]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[C]);
+					break;
+
+
+				default:
+					break;
+				}
+
+			}
 		}
 
 		// ignore branch hazards when jumps are not taken
@@ -259,7 +431,7 @@ public:
 	}
 
 	void MEM() {
-		Awb = A; Bwb = B; Cwb = C; Dwb = D; Ewb = E; cbitwb = cbit2; ALUowb = ALUo; typewb = typemem; opcodewb = opcodemem;
+		Awb = A; Bwb = B; Cwb = C; Dwb = D; Ewb = E; cbitwb = cbit2; ALUowb = ALUo; typewb = typemem; opcodewb = opcodemem; ALUomwb = ALUom;
 		if (typemem == 7) {
 			next = 4;
 			return;
@@ -270,15 +442,23 @@ public:
 				{
 				case 0:
 					mem.spadLoad(mem.registers[C], mem.registers[A], ALUo);
+					spadTrack.pop_front();
+					spadTrack.pop_front();
 					break;
 				case 1:
 					mem.spadStore(mem.registers[A], mem.registers[C], ALUo);
+					spadTrack.pop_front();
+					spadTrack.pop_front();
 					break;
 				case 10:
 					mem.spadLoad(mem.registers[C], mem.registers[A], ALUo);
+					spadTrack.pop_front();
+					spadTrack.pop_front();
 					break;
 				case 11:
 					mem.spadStore(mem.registers[A], mem.registers[C], ALUo);
+					spadTrack.pop_front();
+					spadTrack.pop_front();
 					break;
 				case 7:
 					if (cache == false) {
@@ -302,6 +482,10 @@ public:
 				default:
 					break;
 				}
+			}
+			else if (typemem = 4) {
+
+
 			}
 		}
 		else {
@@ -340,6 +524,78 @@ public:
 				case 10:
 					mem.registers[3] = ALUowb;
 					regHaz[3] = false;
+				default:
+					break;
+				}
+			}
+			else if (typewb == 4) {
+				switch (opcode)
+				{
+				case 0:
+					for (int i = 0; i < mem.registers[Bwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+				case 6:
+					for (int i = 0; i < mem.registers[Cwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+				case 7:
+					for (int i = 0; i < mem.registers[Cwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+				case 8:
+					for (int i = 0; i < mem.registers[Cwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+				case 9:
+					for (int i = 0; i < mem.registers[Cwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+				case 10:
+					for (int i = 0; i < mem.registers[Cwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+				case 11:
+					for (int i = 0; i < mem.registers[Cwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+				case 12:
+					for (int i = 0; i < mem.registers[Cwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+				case 13:
+					for (int i = 0; i < mem.registers[Cwb]; i++) {
+						mem.SPAD[mem.registers[Awb] + i] = ALUomwb[i];
+					}
+					spadTrack.pop_front();
+					spadTrack.pop_front();
+					break;
+
+
 				default:
 					break;
 				}
