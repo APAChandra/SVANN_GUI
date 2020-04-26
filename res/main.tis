@@ -31,7 +31,7 @@ function refreshDram(){
 	// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
 	var dramStr = view.grabDataFrom_DRAM();
 
-	// convert cache string into array
+	// convert dram string into array
 	var dramArr = dramStr.split(' ');
 
 	// button click testing
@@ -47,6 +47,31 @@ function refreshDram(){
 	
 	
 	numDramClicks++;
+}
+
+var numSpadClicks = 0;
+function refreshSpad(){
+	// grab all DRAM lines from DRAM as string
+	// cache data comes in as .... abcd ....
+	// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
+	var spadStr = view.grabDataFrom_SPAD();
+
+	// convert cache string into array
+	var spadArr = spadStr.split(' ');
+
+	// button click testing
+	if (numSpadClicks > 0){
+		self#spadCell.text = "number of times refreshed: ".concat(numSpadClicks.toString());
+		self#spadCell.$append(<br>);
+	}
+	
+	// add in each line to cache UI with a break character
+	for (var i = 0; i < spadArr.length; i++){
+		self#spadCell.$append(<font color="blue">{i}: </font>{spadArr[i]}<br>);
+	}
+	
+	
+	numSpadClicks++;
 }
 
 var numCacheClicks = 0;
@@ -85,6 +110,7 @@ function updateClock(){
 // ALWAYS REFRESH ALL DATA WHEN APP IS FIRST OPENED
 refreshRegs();
 refreshDram();
+refreshSpad();
 refreshCache();
 updateClock();
 
@@ -95,6 +121,9 @@ regsRefrshBtn.on("click", refreshRegs);
 
 var dramRefrshBtn = $(button#dramRefrshBtn);
 dramRefrshBtn.on("click", refreshDram);
+
+var spadRefrshBtn = $(button#spadRefrshBtn);
+spadRefrshBtn.on("click", refreshSpad);
 
 var cacheRefrshBtn = $(button#cacheRefrshBtn);
 cacheRefrshBtn.on("click", refreshCache);
@@ -116,12 +145,45 @@ $(button#uploadInstrBtn).onClick = function(){
 };
 
 $(button#saveProgStateBtn).onClick = function(){
-  var __ = view.saveProgState("progSaveTest.txt"); // return is junk right now
+  var fileName = self#progPathField.text;
+  
+  var __ = view.saveProgState(fileName); // return is junk right now
 };
 
-$(button#readInProgStateBtn).onClick = function(){
+$(button#readInProgStateBtn).onClick = function(){	
+	
   var progFileName = self#progPathField.text
-  var __ = view.readInProgState(progFileName); // return is junk right now
+  var instrStrtAndEnd = view.readInProgState(progFileName);
+  
+  var arr = instrStrtAndEnd.split("_");
+  
+  var instrStrt = arr[0];
+  var instrEnd = arr[1];
+  
+  var instrFileName = self#filePathField.text // this should probably be saved in memory somwhere
+  var allInstructions = view.uploadInstructionsFile(instrFileName);
+  var instrctnsArr = allInstructions.split('X');
+  var numSteps1 = self#numStepsToRun.text;
+  self#instrctnsCell.text = "";
+  
+  // -1 in iterator there so exit instruction isn't printed
+  for (var i = 0; i < instrctnsArr.length - 1; i++){
+	if( 0 <= i && i < instrStrt){
+		self#instrctnsCell.$append(<font color="blue">{i}: </font><font color="green">{instrctnsArr[i]}</font><br>);
+	} else {
+		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr[i]}<br>);
+	}
+  }
+  
+    // debugging... can remove this if instruction coloring works
+  self#instrctnsCell.$append(<font color="red">debugging in TIS is easy!</font><br>);	
+  refreshRegs();
+  refreshDram();
+  refreshSpad();
+  refreshCache();
+  updateClock();
+  
+  
 };
 
 

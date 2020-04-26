@@ -141,7 +141,7 @@ public:
 			reg[i] = bitExtracted(IR, 9 + (i * 6), 6);
 		}
 
-		// debugging, trying to detecht when a jump is NOT taken
+		// debugging, trying to detect when a jump is NOT taken
 		int z = 0;
 		if (cbit == 1 && type == 0 && mem.registers[3] == 0) {
 			branchSkipped = true;

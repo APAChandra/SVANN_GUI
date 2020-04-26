@@ -21,7 +21,7 @@
             <td id="instrctnsCell" class="cntntCell" rowspan="3"></td>
 
             <!-- REGISTERS CELL -->
-            <td id="regsCell" class="cntntCell" rowspan="3"></td>
+            <td id="regsCell" class="cntntCell"></td>
 
             <!-- DRAM CELL -->
             <td id="dramCell" class="cntntCell"></td>
@@ -32,6 +32,7 @@
 
                 <button type="button" id="regsRefrshBtn">Refresh Registers</button><br />
                 <button type="button" id="dramRefrshBtn">Refresh DRAM</button><br />
+                <button type="button" id="spadRefrshBtn">Refresh SPAD</button><br />
                 <button type="button" id="cacheRefrshBtn">Refresh Cache</button><br />
                 <br />
                 <br />
@@ -68,13 +69,17 @@
             </td>
         </tr>
 
-        <!-- Third Row of Table: Cache Cell Header -->
+        <!-- Third Row of Table: Cache Cell and Spad Headers -->
         <tr>
+            <th><b>ScratchPad</b></th>
+
             <th><b>Cache</b></th>
         </tr>
 
-        <!-- Fourth Row of Table: Cache Cell -->
+        <!-- Fourth Row of Table: Cache and Spad Cells -->
         <tr>
+            <td id="spadCell" class="cntntCell"></td>
+
             <td id="cacheCell" class="cntntCell"></td>
         </tr>
 
