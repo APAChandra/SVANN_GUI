@@ -5,6 +5,7 @@
 #include "memory.h"
 #include <deque>
 #include <math.h>
+#include <vector>
 
 class pipeline {
 public:
