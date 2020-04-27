@@ -93,13 +93,13 @@ public:
 				if ((endAddr < spadTrack[i+1] && endAddr > spadTrack[i]) || 
 					(startAdress > spadTrack[i] && startAdress < spadTrack[i+1]) ||
 					(startAdress < spadTrack[i] && endAddr > spadTrack[i+1])) {
-					return false;
+					return true;
 				}
 			}
 				
 		}
 
-		return true;
+		return false;
 	}
 
 	int secElem(deque<long long int> x) {
@@ -148,7 +148,7 @@ public:
 			branchSkipped = true;
 		}
 
-		if (type == 1 && opcode == 1) {
+		if (type == 1 && opcode == 10) {
 			if (regHaz[reg[0]] || regHaz[reg[1]] || regHaz[reg[2]] || regHaz[reg[3]]) {
 				RAW = true;
 				RAWind = npc;
@@ -159,7 +159,7 @@ public:
 			}
 		}
 
-		if (type == 4 && (opcode == 1 || opcode == 2)) {
+		if (type == 4 && (opcode == 0)) {
 			if (regHaz[reg[0]] || regHaz[reg[1]] || regHaz[reg[2]] || regHaz[reg[3]] || regHaz[reg[4]]) {
 				RAW = true;
 				RAWind = npc;
@@ -301,16 +301,16 @@ public:
 					break;
 				case 10:
 					ALUo = mem.registers[reg[1]] * mem.registers[reg[2]];
-					spadTrack.push_back(mem.registers[A]);
-					spadTrack.push_back(mem.registers[A] + mem.registers[B] * mem.registers[C]);
+					spadTrack.push_back(mem.registers[D]);
+					spadTrack.push_back(mem.registers[D] + (mem.registers[B] * mem.registers[C] -1));
 					//spadTrack.push_back({ mem.registers[A], mem.registers[A] + (mem.registers[B] * mem.registers[C])});
 					//TODO
 					//Figure out RAW Hazards for scratchpad
 					break;
 				case 11:
 					ALUo = mem.registers[reg[1]]*mem.registers[reg[2]];
-					spadTrack.push_back(mem.registers[A]);
-					spadTrack.push_back(mem.registers[A] + mem.registers[B] * mem.registers[C]);
+					spadTrack.push_back(mem.registers[D]);
+					spadTrack.push_back(mem.registers[D] + (mem.registers[B] * mem.registers[C])-1);
 					//spadTrack.push_back({ mem.registers[A], mem.registers[A] + (mem.registers[B] * mem.registers[C]) });
 					//TODO
 					//Figure out RAW Hazards for scratchpad
@@ -348,7 +348,7 @@ public:
 					}
 				
 					spadTrack.push_back(mem.registers[A]);
-					spadTrack.push_back(mem.registers[A] + mem.registers[B]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[B] -1);
 					break;
 				case 6:
 					ALUom.clear();
