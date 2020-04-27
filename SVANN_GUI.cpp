@@ -25,6 +25,7 @@ public:
     memory memTest;
     pipeline globalPipeline = pipeline(memTest); // reinitialize pipeTestObject
     bool selecSortRan = false;
+    bool mmmRan = false;
 
 
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS | SW_MAIN | SW_ENABLE_DEBUG) {}
@@ -334,9 +335,9 @@ public:
         //      - without it C++ will throw an error on the sysCall declaration
         std::string tmp = stdFileName;
         std::string sysCall = "python 535Assembler.py" + stdFileName;
-        if (selecSortRan == false){
+        if (selecSortRan == false && mmmRan == false){
             system("python 535Assembler.py selectionSort.txt"); // won't work currently
-        }
+        } 
         
 
         // read binary instructions file and place instructions in DRAM
@@ -376,7 +377,7 @@ public:
             //memTest.DRAM[103] = 23;
             //memTest.DRAM[104] = 92;
         }
-        else if (fileNameWStr.compare(WSTR("MMM.txt")) == 0) {
+        else if (fileNameWStr.compare(WSTR("MMM.txt")) == 0 && mmmRan == false) {
             memTest.DRAM[100] = 14;
             memTest.DRAM[101] = 9;
             memTest.DRAM[102] = 8;
@@ -571,6 +572,7 @@ public:
         if (pipeBool) {
             memTest = globalPipeline.runPipeline(memTest.instructionsStart, memTest.instructionsStart + numSteps);
             selecSortRan = true;
+            mmmRan = true;
         }
         else {
             memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsStart + numSteps);
