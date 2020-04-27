@@ -342,7 +342,7 @@ public:
 					for (int i = 0; i < mem.registers[B]; i++) {
 						int value = 0;
 						for (int j = 0; j < mem.registers[E]; j++) {
-							value += mem.SPAD[(mem.registers[C] + i * mem.registers[B]) + j] * mem.SPAD[mem.registers[D]+j];
+							value += mem.SPAD[(mem.registers[C] + j * mem.registers[B])+i] * mem.SPAD[mem.registers[D]+j];
 						}
 						ALUom.push_back(value);
 					}
