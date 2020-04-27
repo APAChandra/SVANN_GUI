@@ -376,6 +376,58 @@ public:
             //memTest.DRAM[103] = 23;
             //memTest.DRAM[104] = 92;
         }
+        else if (fileNameWStr.compare(WSTR("MMM.txt")) == 0) {
+            memTest.DRAM[100] = 14;
+            memTest.DRAM[101] = 9;
+            memTest.DRAM[102] = 8;
+            memTest.DRAM[103] = 5;
+            memTest.DRAM[104] = 14;
+            memTest.DRAM[105] = 8;
+            memTest.DRAM[106] = 14;
+            memTest.DRAM[107] = 5;
+            memTest.DRAM[108] = 3;
+            memTest.DRAM[109] = 3;
+            memTest.DRAM[110] = 2;
+            memTest.DRAM[111] = 10;
+            memTest.DRAM[112] = 6;
+            memTest.DRAM[113] = 3;
+            memTest.DRAM[114] = 12;
+            memTest.DRAM[115] = 4;
+            memTest.DRAM[116] = 13;
+            memTest.DRAM[117] = 6;
+            memTest.DRAM[118] = 13;
+            memTest.DRAM[119] = 1;
+            memTest.DRAM[120] = 4;
+            memTest.DRAM[121] = 1;
+            memTest.DRAM[122] = 9;
+            memTest.DRAM[123] = 12;
+            memTest.DRAM[124] = 6;
+            memTest.DRAM[125] = 10;
+            memTest.DRAM[126] = 1;
+            memTest.DRAM[127] = 4;
+            memTest.DRAM[128] = 13;
+            memTest.DRAM[129] = 11;
+            memTest.DRAM[130] = 14;
+            memTest.DRAM[131] = 7;
+            memTest.DRAM[132] = 2;
+            memTest.DRAM[133] = 1;
+            memTest.DRAM[134] = 5;
+            memTest.DRAM[135] = 5;
+            memTest.DRAM[136] = 16;
+            memTest.DRAM[137] = 1;
+            memTest.DRAM[138] = 10;
+            memTest.DRAM[139] = 8;
+            memTest.DRAM[140] = 1;
+            memTest.DRAM[141] = 13;
+            memTest.DRAM[142] = 9;
+            memTest.DRAM[143] = 10;
+            memTest.DRAM[144] = 4;
+            memTest.DRAM[145] = 6;
+            memTest.DRAM[146] = 13;
+            memTest.DRAM[147] = 12;
+            memTest.DRAM[148] = 7;
+            memTest.DRAM[149] = 14;
+        }
 
         return allInstructions;
     }
