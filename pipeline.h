@@ -452,12 +452,12 @@ public:
 					spadTrack.pop_front();
 					break;
 				case 10:
-					mem.spadLoad(mem.registers[C], mem.registers[A], ALUo);
+					mem.spadLoad(mem.registers[A], mem.registers[D], ALUo);
 					spadTrack.pop_front();
 					spadTrack.pop_front();
 					break;
 				case 11:
-					mem.spadStore(mem.registers[A], mem.registers[C], ALUo);
+					mem.spadStore(mem.registers[A], mem.registers[D], ALUo);
 					spadTrack.pop_front();
 					spadTrack.pop_front();
 					break;
