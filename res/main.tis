@@ -263,6 +263,7 @@ $(button#singleStep).onClick = function(){
   // update all non-control panels
   refreshRegs();
   refreshDram();
+  refreshSpad();
   refreshCache();
   updateClock();
   
