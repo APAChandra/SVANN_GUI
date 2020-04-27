@@ -335,9 +335,12 @@ public:
         //      - without it C++ will throw an error on the sysCall declaration
         std::string tmp = stdFileName;
         std::string sysCall = "python 535Assembler.py" + stdFileName;
-        if (selecSortRan == false && mmmRan == false){
+        if (selecSortRan == false){
             system("python 535Assembler.py selectionSort.txt"); // won't work currently
-        } 
+        }
+        else if (mmmRan == false) {
+            system("python 535Assembler.py MMM.txt"); // won't work currently
+        }
         
 
         // read binary instructions file and place instructions in DRAM
