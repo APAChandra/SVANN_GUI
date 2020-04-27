@@ -16,17 +16,16 @@ def get_binary_of(instr):
     instrName = instrList[0]
 
     # get type code
-    intTransferInstrs = ["LOADINT", "INTSTORE"]
-    matTransferInstrs = ["MLOAD", "MSTORE"]
+    dataTransferInstrs = ["LOADINT", "INTSTORE", "MLOAD", "MSTORE"]
     intCompInstrs = ["ADD"]
     matCompInstrs = ["MMV"]
     controlFlowInstrs = ["CMP"]
 
-    if instrName in intTransferInstrs:
+    if instrName in dataTransferInstrs:
         typeCode = "001"
     elif instrName in intCompInstrs:
         typeCode = "011"
-    elif instrName in matCompInstrs or matTransferInstrs:
+    elif instrName in matCompInstrs:
         typeCode = "100"
     elif instrName in controlFlowInstrs:
         typeCode = "011"
