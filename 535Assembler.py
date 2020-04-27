@@ -16,14 +16,18 @@ def get_binary_of(instr):
     instrName = instrList[0]
 
     # get type code
-    dataTransferInstrs = ["LOADINT", "INTSTORE"]
-    computationalInstrs = ["ADD"]
+    intTransferInstrs = ["LOADINT", "INTSTORE"]
+    matTransferInstrs = ["MLOAD", "MSTORE"]
+    intCompInstrs = ["ADD"]
+    matCompInstrs = ["MMV"]
     controlFlowInstrs = ["CMP"]
 
-    if instrName in dataTransferInstrs:
+    if instrName in intTransferInstrs:
         typeCode = "001"
-    elif instrName in computationalInstrs:
+    elif instrName in intCompInstrs:
         typeCode = "011"
+    elif instrName in matCompInstrs or matTransferInstrs:
+        typeCode = "100"
     elif instrName in controlFlowInstrs:
         typeCode = "011"
     elif instrName == "JUMP":  # JUMP is the only instruction with tyeCode 000
@@ -35,9 +39,12 @@ def get_binary_of(instr):
     # get opcode
     opCodeDict = {
         "LOADINT": "00111",
+        "MLOAD": "01010",
         "INTSTORE": "01000",
+        "MSTORE": "01010",
         "ADD": "00000",
         "CMP": "01010",
+        "MMV": "00000",
         "JUMP": "00000"
     }
 
@@ -57,7 +64,7 @@ def get_binary_of(instr):
             instrRegs.append(binRegNum)
         elif len(param) > 1 and param[1] == 'x':
             immedValHex = param
-    #print(instrRegs)
+    # print(instrRegs)
 
     # grab special compare params if CMP instruction
     if instrName == "CMP":
@@ -107,8 +114,8 @@ binaryStr = ""
 with open(assemblyFile, "r") as a_file:
     for line in a_file:
         stripped_line = line.strip()
-        #print('assembly line:', stripped_line)
-        #print('binary line: ', get_binary_of(stripped_line))
+        # print('assembly line:', stripped_line)
+        # print('binary line: ', get_binary_of(stripped_line))
         binaryStr += get_binary_of(stripped_line) + "\n"
         # add in exit instruction
     binaryStr += "1110000000000000000000000000000000000000000000000000000000000000\n"
