@@ -290,7 +290,7 @@ public:
 					//TODO
 					//Figure out RAW Hazards for scratchpad
 					spadTrack.push_back(mem.registers[A]);
-					spadTrack.push_back( mem.registers[A] + mem.registers[B] );
+					spadTrack.push_back(mem.registers[A] + mem.registers[B]);
 					break;
 				case 1:
 					ALUo = mem.registers[reg[1]];
@@ -302,7 +302,7 @@ public:
 				case 10:
 					ALUo = mem.registers[reg[1]] * mem.registers[reg[2]];
 					spadTrack.push_back(mem.registers[A]);
-					spadTrack.push_back(mem.registers[B] * mem.registers[C]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[B] * mem.registers[C]);
 					//spadTrack.push_back({ mem.registers[A], mem.registers[A] + (mem.registers[B] * mem.registers[C])});
 					//TODO
 					//Figure out RAW Hazards for scratchpad
@@ -310,7 +310,7 @@ public:
 				case 11:
 					ALUo = mem.registers[reg[1]]*mem.registers[reg[2]];
 					spadTrack.push_back(mem.registers[A]);
-					spadTrack.push_back(mem.registers[B] * mem.registers[C]);
+					spadTrack.push_back(mem.registers[A] + mem.registers[B] * mem.registers[C]);
 					//spadTrack.push_back({ mem.registers[A], mem.registers[A] + (mem.registers[B] * mem.registers[C]) });
 					//TODO
 					//Figure out RAW Hazards for scratchpad
