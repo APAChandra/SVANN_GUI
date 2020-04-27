@@ -40,7 +40,7 @@ def get_binary_of(instr):
         "LOADINT": "00111",
         "MLOAD": "01010",
         "INTSTORE": "01000",
-        "MSTORE": "01010",
+        "MSTORE": "01011",
         "ADD": "00000",
         "CMP": "01010",
         "MMV": "00000",
