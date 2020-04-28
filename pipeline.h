@@ -709,7 +709,7 @@ public:
 
 	memory runWithoutPipeLine(int startAddr, int endAddr) {
 		for (int i = startAddr; i < endAddr; i++) {
-			runPipeline(i, i);
+			runPipeline(i, i+1);
 		}
 
 		return mem;

@@ -24,6 +24,7 @@ public:
     // INITIAL SETUP OF MEMORY AND PIPELINE OBJECTS
     memory memTest;
     pipeline globalPipeline = pipeline(memTest); // reinitialize pipeTestObject
+    int clock = 0;
     bool selecSortRan = false;
     bool mmmRan = false;
 
@@ -578,6 +579,7 @@ public:
         else {
             memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsStart + numSteps);
         }
+        clock = clock + globalPipeline.clock;
         
         // compare saved instruction start to new instruction start to check for jumps
         wstring curInstr = WSTR("");
@@ -602,7 +604,7 @@ public:
     // This function is probably broken right now
     // most likely is behind on actual clockcount
     sciter::string getClockCount() {
-        return to_wstring(globalPipeline.clock);
+        return to_wstring(clock);
     }
 
     sciter::string getInstrStartEnd() {
