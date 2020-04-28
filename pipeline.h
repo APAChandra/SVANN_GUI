@@ -341,11 +341,12 @@ public:
 					mem.registers[1] = (npc - 1) + Imm;
 					singleStepBranch = true;
 					ins_track.pop_back();
+					clock -= 200;
 					IF();
 					return;
 				}
 				else {
-					mem.registers[1] = mem.registers[1] + Imm;
+					mem.registers[1] = mem.registers[1] - 1 + Imm;
 					return;
 				}
 			}
@@ -511,7 +512,8 @@ public:
 			}
 		}
 		else {
-			mem.registers[1] = npc;
+			if(pipe)
+				mem.registers[1] = npc;
 		}
 
 		int z = secElem(ins_track);
@@ -729,7 +731,7 @@ public:
 	}
 
 	memory runWithoutPipeLine(int startAddr, int endAddr) {
-		for (int i = startAddr; i < endAddr; i++) {
+		while (next!=4) {
 			IF(false);
 			clock++;
 			ID(false);

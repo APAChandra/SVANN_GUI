@@ -578,6 +578,7 @@ public:
         }
         else {
             memTest = globalPipeline.runWithoutPipeLine(memTest.instructionsStart, memTest.instructionsStart + numSteps);
+            selecSortRan = true;
         }
         clock = clock + globalPipeline.clock;
         
