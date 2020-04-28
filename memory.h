@@ -183,7 +183,7 @@ class memory {
         //simulator for the load instruction.
         int load(long long int binary, int regIndex){
             //bool flip = true;
-            int clocktime = 10;
+            int clocktime = 100;
             string address = decToBinary(binary);
             int set = stoi(address.substr(58, 4), 0, 2);
             int offset = stoi(address.substr(62, 2), 0, 2);
@@ -200,7 +200,7 @@ class memory {
                         cache[set][i].LRU = 0;
                     }
                 }
-                clocktime = 100;
+                clocktime = 10;
             }
             else
             {
@@ -271,7 +271,7 @@ class memory {
         }
 
         int store(long long int binary, int regIndex){
-            int clocktime = 10;
+            int clocktime = 100;
             string address = decToBinary(binary);
             int set = stoi(address.substr(58, 4), 0, 2);
             int offset = stoi(address.substr(62, 2), 0, 2);
@@ -290,7 +290,7 @@ class memory {
                         cache[set][i].LRU = 0;
                     }
                 }
-                clocktime = 100;
+                clocktime = 10;
                 
             }
             else

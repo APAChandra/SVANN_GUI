@@ -663,7 +663,7 @@ public:
 		MEM();
 		clock++;
 		WB();
-
+		clock++;
 		// if a single step is being taken AND a jump has just occured,
 		// we want to return immediately
 		if (startAddr = endAddr + 1 && singleStepBranch) {
