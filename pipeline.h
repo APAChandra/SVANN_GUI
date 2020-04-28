@@ -127,7 +127,7 @@ public:
 		return stoi(num.substr(61, k), nullptr, 2);
 	}
 
-	void IF() {
+	void IF(boolean pipe = true) {
 		if (cache) {
 			clock += mem.load(mem.registers[1], 63);
 		}
@@ -135,13 +135,15 @@ public:
 			mem.registers[63] = mem.DRAM[mem.registers[1]];
 			clock += 100;
 		}
+
+//		mem.registers[63] = mem.DRAM[mem.registers[1]];
 			
 		npc = mem.registers[1];
 		ins_track.push_back(npc);
 		mem.registers[1]++;
 	}
 
-	void ID() {
+	void ID(boolean pipe = true) {
 		type = bitExtracted(mem.registers[63], 0, 3);
 		cbit = bitExtracted(mem.registers[63], 3, 1);
 		opcode = bitExtracted(mem.registers[63], 4, 5);
@@ -230,11 +232,11 @@ public:
 			next = 4;
 			return;
 		}
-
-		IF();
+		if(pipe == true)
+			IF();
 	}
 
-	void EX() {
+	void EX(boolean pipe = true) {
 		A = reg[0]; B = reg[1]; C = reg[2]; D = reg[3]; E = reg[4]; cbit2 = cbit; typemem = type; opcodemem = opcode;
 		if (type == 7) {
 			next = 4;
@@ -335,11 +337,17 @@ public:
 				}
 			}
 			else if (type == 0) {
-				mem.registers[1] = (npc - 1) + Imm;
-				singleStepBranch = true;
-				ins_track.pop_back();
-				IF();
-				return;
+				if (pipe) {
+					mem.registers[1] = (npc - 1) + Imm;
+					singleStepBranch = true;
+					ins_track.pop_back();
+					IF();
+					return;
+				}
+				else {
+					mem.registers[1] = mem.registers[1] + Imm;
+					return;
+				}
 			}
 			else if (type == 4) {
 				switch (opcode) 
@@ -434,11 +442,11 @@ public:
 		if (type == 0) {
 			branch = false;
 		}
-
+		if(pipe)
 		ID();
 	}
 
-	void MEM() {
+	void MEM(boolean pipe = true) {
 		Awb = A; Bwb = B; Cwb = C; Dwb = D; Ewb = E; cbitwb = cbit2; ALUowb = ALUo; typewb = typemem; opcodewb = opcodemem; ALUomwb = ALUom;
 		if (typemem == 7) {
 			next = 4;
@@ -474,7 +482,7 @@ public:
 					break;
 				case 7:
 					if (cache == false) {
-						mem.registers[mem.registers[A]] = mem.DRAM[ALUo];
+						mem.registers[A] = mem.DRAM[ALUo];
 						clock += 100;
 					}
 					else {
@@ -507,19 +515,19 @@ public:
 		}
 
 		int z = secElem(ins_track);
-		if (branch && ins_track.front() == branchind) {
+		if (branch && ins_track.front() == branchind && pipe) {
 			ID();
 		}
-		else if ((RAW && RAWind == z) || (cond && ins_track.front() == condind)) {
+		else if (((RAW && RAWind == z) || (cond && ins_track.front() == condind)) && pipe) {
 			next = 1;
 		}
-		else {
+		else if(pipe) {
 			EX();
 		}
 
 	}
 
-	void WB() {
+	void WB(boolean pipe = true) {
 		if (typewb == 7) {
 			next = 4;
 			return;
@@ -615,25 +623,25 @@ public:
 				}
 			}
 		}
-		if (branch && ins_track.front() == branchind) {
+		if (branch && ins_track.front() == branchind && pipe) {
 			branch = false;
 			ins_track.pop_front();
 			EX();
 			next = 1;
 		}
-		else if (RAW && RAWind == secElem(ins_track)) {
+		else if (RAW && RAWind == secElem(ins_track) && pipe) {
 			RAW = false;
 			ins_track.pop_front();
 			EX();
 			next = 1;
 		}
-		else if (cond && ins_track.front() == condind) {
+		else if (cond && ins_track.front() == condind && pipe) {
 			cond = false;
 			ins_track.pop_front();
 			EX();
 			next = 1;
 		}
-		else {
+		else if(pipe){
 			ins_track.pop_front();
 			MEM();
 
@@ -722,7 +730,16 @@ public:
 
 	memory runWithoutPipeLine(int startAddr, int endAddr) {
 		for (int i = startAddr; i < endAddr; i++) {
-			runPipeline(i, i+1);
+			IF(false);
+			clock++;
+			ID(false);
+			clock++;
+			EX(false);
+			clock++;
+			MEM(false);
+			clock++;
+			WB(false);
+			clock++;
 		}
 
 		return mem;
