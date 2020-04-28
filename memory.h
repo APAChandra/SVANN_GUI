@@ -181,8 +181,9 @@ class memory {
             return i;
         }
         //simulator for the load instruction.
-        void load(long long int binary, int regIndex){
+        int load(long long int binary, int regIndex){
             //bool flip = true;
+            int clocktime = 10;
             string address = decToBinary(binary);
             int set = stoi(address.substr(58, 4), 0, 2);
             int offset = stoi(address.substr(62, 2), 0, 2);
@@ -199,6 +200,7 @@ class memory {
                         cache[set][i].LRU = 0;
                     }
                 }
+                clocktime = 100;
             }
             else
             {
@@ -251,6 +253,7 @@ class memory {
                         cache[set][i].LRU++;
                 }
             }
+            return clocktime;
         }
 
         string printCache(int set){
@@ -267,7 +270,8 @@ class memory {
             return c;
         }
 
-        void store(long long int binary, int regIndex){
+        int store(long long int binary, int regIndex){
+            int clocktime = 10;
             string address = decToBinary(binary);
             int set = stoi(address.substr(58, 4), 0, 2);
             int offset = stoi(address.substr(62, 2), 0, 2);
@@ -286,6 +290,7 @@ class memory {
                         cache[set][i].LRU = 0;
                     }
                 }
+                clocktime = 100;
                 
             }
             else
@@ -340,6 +345,7 @@ class memory {
                         cache[set][i].LRU++;
                 }
             }
+            return clocktime;
         }
 
         // MEMORY CONSTRUCTOR

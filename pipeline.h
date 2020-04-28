@@ -443,11 +443,13 @@ public:
 				{
 				case 0:
 					mem.spadLoad(mem.registers[C], mem.registers[A], ALUo);
+					clock += 100;
 					spadTrack.pop_front();
 					spadTrack.pop_front();
 					break;
 				case 1:
 					mem.spadStore(mem.registers[A], mem.registers[C], ALUo);
+					clock += 100;
 					spadTrack.pop_front();
 					spadTrack.pop_front();
 					break;
@@ -464,9 +466,11 @@ public:
 				case 7:
 					if (cache == false) {
 						mem.registers[mem.registers[A]] = mem.DRAM[ALUo];
+						clock += 100;
 					}
 					else {
-						mem.load(ALUo, A);
+						clock+=mem.load(ALUo, A);
+
 					}
 					regHaz[A] = false;
 					break;
@@ -475,7 +479,7 @@ public:
 						mem.DRAM[ALUo] = mem.registers[A];
 					}
 					else {
-						mem.store(ALUo, A);
+						clock+=mem.store(ALUo, A);
 					}
 
 					regHaz[A] = false;
@@ -484,7 +488,7 @@ public:
 					break;
 				}
 			}
-			else if (typemem = 4) {
+			else if (typemem == 4) {
 
 
 			}
