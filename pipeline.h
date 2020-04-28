@@ -143,6 +143,9 @@ public:
 
 	void ID() {
 		type = bitExtracted(mem.registers[63], 0, 3);
+		if (type == 7) {
+			cout << "gang";
+		}
 		cbit = bitExtracted(mem.registers[63], 3, 1);
 		opcode = bitExtracted(mem.registers[63], 4, 5);
 		for (int i = 0; i < 5; i++) {
