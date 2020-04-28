@@ -332,16 +332,13 @@ public:
 
         // Call Python script that will write binary instructions file
         //      - This temporary variable is apparently extremely important!
-        //      - without it C++ will throw an error on the sysCall declaration
+        //      - without it C++ will throw an error on the sysCallStr declaration
         std::string tmp = stdFileName;
-        std::string sysCall = "python 535Assembler.py" + stdFileName;
-        if (selecSortRan == false){
-            system("python 535Assembler.py selectionSort.txt"); // won't work currently
-        }
-        else if (mmmRan == false) {
-            system("python 535Assembler.py MMM.txt"); // won't work currently
-        }
+        std::string sysCallStr = "python 535Assembler.py " + stdFileName;
+        char* sysCall = const_cast<char*>(sysCallStr.c_str());
+        system(sysCall);
         
+
 
         // read binary instructions file and place instructions in DRAM
         std::string binInstrs = "";

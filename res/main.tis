@@ -1,101 +1,137 @@
 // REFRESH REGISTERS FUNCTION ///////////////////////////////////////////////////////
-var numRegClicks = 0;
+var regIdStr;
+var globalRegArr = [];
 function refreshRegs (){
-	// grab all data as big string
-	// cache data comes in as .... abcd ....
-	// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
-	var regStr = view.grabDataFrom_Registers();
-
-	// convert cache string into array
-	var regArr = regStr.split(' ');
-	
-	// button click testing
-	if (numRegClicks > 0){
-		self#regsCell.text = "number of times refreshed: ".concat(numRegClicks.toString());
-		self#regsCell.$append(<br>);
+	if (globalRegArr.length == 0){
+		// first time loading instructions
+		// create unique div elements for each register
+		var regStr = view.grabDataFrom_Registers();
+		globalRegArr = regStr.split(' ');
+		for (var i = 0; i < globalRegArr.length; i++){
+			regIdStr = "regLine_".concat(i.toString());
+			self#regsCell.$append(<div id={regIdStr} class="cellLine"><font color="blue">{i}: </font>{globalRegArr[i]}</div><br>);
+		}
+		
+	} else {
+		// instructions must already be loaded
+		// only update register lines that have changed
+		var regStr = view.grabDataFrom_Registers();
+		var tempRegArr = regStr.split(' ');
+		for (var i = 0; i < globalRegArr.length; i++){
+			if (globalRegArr[i] != tempRegArr[i]){
+				regIdStr = "regLine_".concat(i.toString());
+				var tmpStr = "div[id=".concat(regIdStr);
+				var regLineID = tmpStr.concat("]");
+				var regLine = self.select(regLineID);
+				regLine.$content(<font color="blue">{i}: </font>{tempRegArr[i]});
+			}
+		}
+		
+		// update global reg array
+		globalRegArr = tempRegArr;
 	}
-	
-	// add in each line to cache UI with a break character
-	// first set text to the empty string since we are repopulating the whole thing
-	for (var i = 0; i < regArr.length; i++){
-		self#regsCell.$append(<font color="blue">{i}: </font>{regArr[i]}<br>);
-	}
-	
-	numRegClicks++;
 }
 
-var numDramClicks = 0;
+// REFRESH DRAM FUNCTION ///////////////////////////////////////////////////////
+var dramIdStr;
+var globalDramArr = [];
 function refreshDram(){
-	// grab all DRAM lines from DRAM as string
-	// cache data comes in as .... abcd ....
-	// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
-	var dramStr = view.grabDataFrom_DRAM();
-
-	// convert dram string into array
-	var dramArr = dramStr.split(' ');
-
-	// button click testing
-	if (numDramClicks > 0){
-		self#dramCell.text = "number of times refreshed: ".concat(numDramClicks.toString());
-		self#dramCell.$append(<br>);
+	if (globalDramArr.length == 0){
+		// first time loading instructions
+		// create unique div elements for each register
+		var dramStr = view.grabDataFrom_DRAM();
+		globalDramArr = dramStr.split(' ');
+		for (var i = 0; i < globalDramArr.length; i++){
+			dramIdStr = "dramLine_".concat(i.toString());
+			self#dramCell.$append(<div id={dramIdStr} class="cellLine"><font color="blue">{i}: </font>{globalDramArr[i]}</div><br>);
+		}
+		
+	} else {
+		// instructions must already be loaded
+		// only update register lines that have changed
+		var dramStr = view.grabDataFrom_DRAM();
+		var tempDramArr = dramStr.split(' ');
+		for (var i = 0; i < globalDramArr.length; i++){
+			if (globalDramArr[i] != tempDramArr[i]){
+				dramIdStr = "dramLine_".concat(i.toString());
+				var tmpStr = "div[id=".concat(dramIdStr);
+				var dramLineID = tmpStr.concat("]");
+				var dramLine = self.select(dramLineID);
+				dramLine.$content(<font color="blue">{i}: </font>{tempDramArr[i]});
+			}
+		}
+		
+		// update global reg array
+		globalDramArr = tempDramArr;
 	}
-	
-	// add in each line to cache UI with a break character
-	for (var i = 0; i < dramArr.length; i++){
-		self#dramCell.$append(<font color="blue">{i}: </font>{dramArr[i]}<br>);
-	}
-	
-	
-	numDramClicks++;
 }
 
-var numSpadClicks = 0;
+// REFRESH SPAD FUNCTION ///////////////////////////////////////////////////////
+var spadIdStr;
+var globalSpadArr = [];
 function refreshSpad(){
-	// grab all DRAM lines from DRAM as string
-	// cache data comes in as .... abcd ....
-	// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
-	var spadStr = view.grabDataFrom_SPAD();
-
-	// convert cache string into array
-	var spadArr = spadStr.split(' ');
-
-	// button click testing
-	if (numSpadClicks > 0){
-		self#spadCell.text = "number of times refreshed: ".concat(numSpadClicks.toString());
-		self#spadCell.$append(<br>);
+	if (globalSpadArr.length == 0){
+		// first time loading instructions
+		// create unique div elements for each register
+		var spadStr = view.grabDataFrom_SPAD();
+		globalSpadArr = spadStr.split(' ');
+		for (var i = 0; i < globalSpadArr.length; i++){
+			spadIdStr = "spadLine_".concat(i.toString());
+			self#spadCell.$append(<div id={spadIdStr} class="cellLine"><font color="blue">{i}: </font>{globalSpadArr[i]}</div><br>);
+		}
+		
+	} else {
+		// instructions must already be loaded
+		// only update register lines that have changed
+		var spadStr = view.grabDataFrom_SPAD();
+		var tempSpadArr = spadStr.split(' ');
+		for (var i = 0; i < globalSpadArr.length; i++){
+			if (globalSpadArr[i] != tempSpadArr[i]){
+				spadIdStr = "spadLine_".concat(i.toString());
+				var tmpStr = "div[id=".concat(spadIdStr);
+				var spadLineID = tmpStr.concat("]");
+				var spadLine = self.select(spadLineID);
+				spadLine.$content(<font color="blue">{i}: </font>{tempSpadArr[i]});
+			}
+		}
+		
+		// update global reg array
+		globalSpadArr = tempSpadArr;
 	}
-	
-	// add in each line to cache UI with a break character
-	for (var i = 0; i < spadArr.length; i++){
-		self#spadCell.$append(<font color="blue">{i}: </font>{spadArr[i]}<br>);
-	}
-	
-	
-	numSpadClicks++;
 }
 
-var numCacheClicks = 0;
+// REFRESH CACHE FUNCTION ///////////////////////////////////////////////////////
+var cacheIdStr;
+var globalCacheArr = [];
 function refreshCache(){
-	// grab all cachelines from cache as string
-	// cache data comes in as .... abcd ....
-	// where ' ' acts as a delimiter and a,b,c,d are words from a cacheLine
-	var cacheStr = view.grabDataFrom_Cache();
-
-	// convert cache string into array
-	var cacheArr = cacheStr.split('X');
-	
-	// button click testing
-	if (numCacheClicks > 0){
-		self#cacheCell.text = "number of times refreshed: ".concat(numCacheClicks.toString());
-		self#cacheCell.$append(<br>);
+	if (globalCacheArr.length == 0){
+		// first time loading instructions
+		// create unique div elements for each register
+		var cacheStr = view.grabDataFrom_Cache();
+		globalCacheArr = cacheStr.split('X');
+		for (var i = 0; i < globalCacheArr.length; i++){
+			cacheIdStr = "cacheLine_".concat(i.toString());
+			self#cacheCell.$append(<div id={cacheIdStr} class="cellLine"><font color="blue">{i}: </font>{globalCacheArr[i]}</div><br>);
+		}
+		
+	} else {
+		// instructions must already be loaded
+		// only update register lines that have changed
+		var cacheStr = view.grabDataFrom_Cache();
+		var tempCacheArr = cacheStr.split('X');
+		for (var i = 0; i < globalCacheArr.length; i++){
+			if (globalCacheArr[i] != tempCacheArr[i]){
+				cacheIdStr = "cacheLine_".concat(i.toString());
+				var tmpStr = "div[id=".concat(cacheIdStr);
+				var cacheLineID = tmpStr.concat("]");
+				var cacheLine = self.select(cacheLineID);
+				cacheLine.$content(<font color="blue">{i}: </font>{tempCacheArr[i]});
+			}
+		}
+		
+		// update global reg array
+		globalCacheArr = tempCacheArr;
 	}
-
-	// add in each line to cache UI with a break character
-	for (var i = 0; i < cacheArr.length; i++){
-		self#cacheCell.$append(<font color="blue">{i}: </font>{cacheArr[i]}<br>);
-	}
-	
-	numCacheClicks++;
 }
 
 function updateClock(){
@@ -128,20 +164,27 @@ spadRefrshBtn.on("click", refreshSpad);
 var cacheRefrshBtn = $(button#cacheRefrshBtn);
 cacheRefrshBtn.on("click", refreshCache);
 
+var globalInstrArr;
+var instrIdStr;
 $(button#uploadInstrBtn).onClick = function(){
-  var instrFileName = self#filePathField.text
-  var allInstructions = view.uploadInstructionsFile(instrFileName); // pass some attributes and value
-  if (allInstructions === ""){
-	  self#instrctnsCell.text = "Something went wrong... double check your file name";
-  } else {
-	  
-	  var instrctnsArr = allInstructions.split('X');
-	  self#instrctnsCell.text = "";
-	  // -2 in iterator there so exit instruction isn't printed
-	  for (var i = 0; i < instrctnsArr.length - 1; i++){
-		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr[i]}<br>);
-	  }
-  }	
+	// instructions file is only read once, during this function call
+	// global instructions array is initialized using that file read
+	var instrFileName = self#filePathField.text;
+	var instrsStr = view.uploadInstructionsFile(instrFileName); // pass some attributes and value
+	if (instrsStr === ""){
+		self#instrctnsCell.text = "Your file name is empty!";
+	} else {
+		globalInstrArr = instrsStr.split('X');
+		
+		// -1 in iterator so exit instruction isn't printed
+		for (var i = 0; i < globalInstrArr.length - 1; i++){
+			instrIdStr = "instrLine_".concat(i.toString());
+			self#instrctnsCell.$append(<div id={instrIdStr} class="cellLine"><font color="blue">{i}: </font>{globalInstrArr[i]}</div><br>);
+		}
+	}
+
+	// have instructions automatically show up in DRAM cell
+	refreshDram();
 };
 
 $(button#saveProgStateBtn).onClick = function(){
@@ -222,43 +265,36 @@ $(button#runInstrs).onClick = function(){
 };
 
 $(button#singleStep).onClick = function(){
-  var numSteps = "1";
-  var cacheBool = "cacheBool_0";
-  var pipeBool = "pipeBool_0";
-  if (self#cacheCheckBox.state.checked == true){
-	cacheBool = "cacheBool_1";  
-  }
-  
-  if (self#pipeLineCheckBox.state.checked == true){
-	cacheBool = "pipeBool_1";  
-  }
-  
-  numSteps = numSteps.concat(cacheBool);
-  numSteps = numSteps.concat(pipeBool);
-  
-  var curInstr = view.runInstsructionsFor(numSteps);
-  
-  
-  var curInstrInt = curInstr.toInteger();
-  
-    // instruction coloring
-  var instrFileName1 = self#filePathField.text
-  var allInstructions1 = view.uploadInstructionsFile(instrFileName1);
-  var instrctnsArr1 = allInstructions1.split('X');
-  self#instrctnsCell.text = "";
-  
-  // -1 in iterator there so exit instruction isn't printed
-  for (var i = 0; i < instrctnsArr1.length - 1; i++){
-	if( 0 <= i && i < curInstrInt + 1){ // this  +1 should be handled in cpp
-		self#instrctnsCell.$append(<font color="blue">{i}: </font><font color="green">{instrctnsArr1[i]}</font><br>);
-	} else {
-		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr1[i]}<br>);
+	var numSteps = "1";
+	var cacheBool = "cacheBool_0";
+	var pipeBool = "pipeBool_0";
+	if (self#cacheCheckBox.state.checked == true){
+		cacheBool = "cacheBool_1";  
 	}
-  }
-  updateClock();
+
+	if (self#pipeLineCheckBox.state.checked == true){
+		cacheBool = "pipeBool_1";  
+	}
+
+	numSteps = numSteps.concat(cacheBool);
+	numSteps = numSteps.concat(pipeBool);
+
+	var curInstr = view.runInstsructionsFor(numSteps);
+	var curInstrInt = curInstr.toInteger();
   
-  // debugging... can remove this if instruction coloring works
-  self#instrctnsCell.$append(<font color="orange">single step click gang</font><br>);
+	// instruction coloring
+	for (var i = 0; i < globalInstrArr.length - 1; i++){
+		instrIdStr = "instrLine_".concat(i.toString());
+		var tmpStr = "div[id=".concat(instrIdStr);
+		var instrLineID = tmpStr.concat("]");
+		var instrLine = self.select(instrLineID);
+		
+		if( 0 <= i && i < curInstrInt + 1){ // this  +1 should be handled in cpp
+			instrLine.$content(<font color="blue">{i}: </font><font color="green">{globalInstrArr[i]}</font>);
+		} else {
+			instrLine.$content(<font color="blue">{i}: </font>{globalInstrArr[i]});
+		}
+	}
   
   // update all non-control panels
   refreshRegs();
