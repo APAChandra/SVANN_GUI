@@ -241,7 +241,7 @@ $(button#runInstrs).onClick = function(){
   
   if (self#pipeLineCheckBox.state.checked == true){
 	cacheBool = "pipeBool_1";  
-  }
+  } 
   
   numSteps = numSteps.concat(cacheBool);
   numSteps = numSteps.concat(pipeBool);

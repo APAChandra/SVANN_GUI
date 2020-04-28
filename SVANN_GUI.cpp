@@ -562,7 +562,7 @@ public:
         }
         bool pipeBool = true;
         int pipeBoolStrt = instrsArgs.find(WSTR("pipeBool_")) + 9;
-        if (instrsArgs.substr(cacheBoolStrt, 1).compare(WSTR("0")) == 0) {
+        if (instrsArgs.substr(pipeBoolStrt, 1).compare(WSTR("0")) == 0) {
             pipeBool = false;
         }
         int numSteps = stoi(instrsArgs.substr(0, cacheBoolStrt));
