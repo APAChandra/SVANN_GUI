@@ -240,7 +240,7 @@ $(button#runInstrs).onClick = function(){
   }
   
   if (self#pipeLineCheckBox.state.checked == true){
-	cacheBool = "pipeBool_1";  
+	pipeBool = "pipeBool_1";  
   } 
   
   numSteps = numSteps.concat(cacheBool);
@@ -273,7 +273,7 @@ $(button#singleStep).onClick = function(){
 	}
 
 	if (self#pipeLineCheckBox.state.checked == true){
-		cacheBool = "pipeBool_1";  
+		pipeBool = "pipeBool_1";  
 	}
 
 	numSteps = numSteps.concat(cacheBool);
