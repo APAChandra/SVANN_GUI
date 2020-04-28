@@ -17,7 +17,7 @@ public:
 	vector <long long int> ALUomwb;
 	long long int reg[5];
 	long long int Imm;
-	long long int IR;
+	//long long int mem.registers[63];
 	long long int ALUo;
 	int opcode;
 	int type;
@@ -56,7 +56,7 @@ public:
 	pipeline(memory& in) {
 		mem = in;
 		Imm = 0;
-		IR = 0LL;
+		//mem.registers[63] = 0LL;
 		ALUo = 0;
 		npc = 0;
 		branchind = 0;
@@ -128,18 +128,21 @@ public:
 	}
 
 	void IF() {
-		IR = mem.DRAM[mem.registers[1]];
+		if (cache)
+			clock += mem.load(mem.registers[1], 63);
+		else
+			mem.registers[63] = mem.DRAM[mem.registers[1]];
 		npc = mem.registers[1];
 		ins_track.push_back(npc);
 		mem.registers[1]++;
 	}
 
 	void ID() {
-		type = bitExtracted(IR, 0, 3);
-		cbit = bitExtracted(IR, 3, 1);
-		opcode = bitExtracted(IR, 4, 5);
+		type = bitExtracted(mem.registers[63], 0, 3);
+		cbit = bitExtracted(mem.registers[63], 3, 1);
+		opcode = bitExtracted(mem.registers[63], 4, 5);
 		for (int i = 0; i < 5; i++) {
-			reg[i] = bitExtracted(IR, 9 + (i * 6), 6);
+			reg[i] = bitExtracted(mem.registers[63], 9 + (i * 6), 6);
 		}
 
 		// debugging, trying to detect when a jump is NOT taken
@@ -207,8 +210,8 @@ public:
 			RAW = true;
 			RAWind = npc;
 		}
-		Imm = bitExtracted(IR, 40, 24);
-		int sign = bitExtracted(IR, 39, 1);
+		Imm = bitExtracted(mem.registers[63], 40, 24);
+		int sign = bitExtracted(mem.registers[63], 39, 1);
 		if (sign == 1)
 			Imm = 0 - Imm;
 		if (type == 0) {
