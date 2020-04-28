@@ -21,7 +21,7 @@ struct cacheLine {
 
 // TODO:    MAKE SURE ADDRESSES INTO DRAM ARRAY ARE ALWAYS IN BASE 10
 //          TEST DRAM READ/WRITE
-class memory {
+class memory { 
 	public:
         // DRAM is a one-dimensional array of words (long long ints)
         long long int DRAM[256];
