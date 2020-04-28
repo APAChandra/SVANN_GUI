@@ -128,10 +128,14 @@ public:
 	}
 
 	void IF() {
-		if (cache)
+		if (cache) {
 			clock += mem.load(mem.registers[1], 63);
-		else
+		}
+		else {
 			mem.registers[63] = mem.DRAM[mem.registers[1]];
+			clock += 100;
+		}
+			
 		npc = mem.registers[1];
 		ins_track.push_back(npc);
 		mem.registers[1]++;
