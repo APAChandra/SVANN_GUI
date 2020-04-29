@@ -52,9 +52,11 @@ public:
 	int opcodemem;
 	int typewb;
 	int opcodewb;
+	int pclk;
 
 	pipeline(memory& in) {
 		mem = in;
+		pclk = 0;
 		Imm = 0;
 		//mem.registers[63] = 0LL;
 		ALUo = 0;
@@ -344,12 +346,12 @@ public:
 					mem.registers[1] = (npc - 1) + Imm;
 					singleStepBranch = true;
 					ins_track.pop_back();
-					clock -= 200;
 					IF();
 					return;
 				}
 				else {
 					mem.registers[1] = mem.registers[1] - 1 + Imm;
+					clock += 200;
 					return;
 				}
 			}
@@ -674,14 +676,19 @@ public:
 
 		IF();
 		clock++;
+		pclk++;
 		ID();
 		clock++;
+		pclk++;
 		EX();
 		clock++;
+		pclk++;
 		MEM();
 		clock++;
+		pclk++;
 		WB();
 		clock++;
+		pclk++;
 		// if a single step is being taken AND a jump has just occured,
 		// we want to return immediately
 		if (startAddr = endAddr + 1 && singleStepBranch) {
@@ -701,12 +708,15 @@ public:
 			if (next == 1) {
 				MEM();
 				clock++;
+				pclk++;
 				WB();
 				clock++;
+				pclk++;
 			}
 			else if (next == 0) {
 				WB();
 				clock++;
+				pclk++;
 			}
 		}
 
@@ -735,14 +745,19 @@ public:
 		while (next!=4) {
 			IF(false);
 			clock++;
+			pclk++;
 			ID(false);
 			clock++;
+			pclk++;
 			EX(false);
 			clock++;
+			pclk++;
 			MEM(false);
 			clock++;
+			pclk++;
 			WB(false);
 			clock++;
+			pclk++;
 		}
 
 		return mem;
