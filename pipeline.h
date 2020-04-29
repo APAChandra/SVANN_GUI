@@ -655,20 +655,18 @@ public:
 	}
 
 	memory runPipeline(int startAddr, int endAddr) {
-		int y = 0;
-		if (startAddr == 10) {
-			y++;
-		}
 
 		mem.registers[1] = startAddr;
 
 		// if the instruction at endAddr is not already the exit instruction,
 		// temporarily place an exit instruction at endAddr
 		long long int tempInstr;
+		bool instrReplaced = false;
 		if (mem.DRAM[endAddr] != -2305843009213693952) {
 			// save instruction that sits there so it can be replaced later
 			tempInstr = mem.DRAM[endAddr];
 			mem.DRAM[endAddr] = -2305843009213693952;
+			instrReplaced = true;
 		}
 		else {
 			tempInstr = -2305843009213693952;
@@ -712,7 +710,7 @@ public:
 			}
 		}
 
-		// perform instruction replacement for exit instruction
+		// perform instruction replacements for exit instruction
 		mem.DRAM[endAddr] = tempInstr;
 
 		// set instructions start for GUI relative to current PC

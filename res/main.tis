@@ -143,6 +143,30 @@ function updateClock(){
 	self#clockCycles.text = "Clock Cycles: ".concat(cyclesStr); 
 }
 
+var globalInstrArr;
+var instrIdStr;
+function uploadInstructions(){
+	// instructions file is only read once, during this function call
+	// global instructions array is initialized using that file read
+	var instrFileName = self#filePathField.text;
+	var instrsStr = view.uploadInstructionsFile(instrFileName); // pass some attributes and value
+	if (instrsStr === ""){
+		self#instrctnsCell.text = "Your file name is empty!";
+	} else {
+		self#instrctnsCell.text = "";
+		globalInstrArr = instrsStr.split('X');
+		
+		// -1 in iterator so exit instruction isn't printed
+		for (var i = 0; i < globalInstrArr.length - 1; i++){
+			instrIdStr = "instrLine_".concat(i.toString());
+			self#instrctnsCell.$append(<div id={instrIdStr} class="cellLine"><font color="blue">{i}: </font>{globalInstrArr[i]}</div><br>);
+		}
+	}
+
+	// have instructions automatically show up in DRAM cell
+	refreshDram();
+};
+
 // ALWAYS REFRESH ALL DATA WHEN APP IS FIRST OPENED
 refreshRegs();
 refreshDram();
@@ -164,27 +188,18 @@ spadRefrshBtn.on("click", refreshSpad);
 var cacheRefrshBtn = $(button#cacheRefrshBtn);
 cacheRefrshBtn.on("click", refreshCache);
 
-var globalInstrArr;
-var instrIdStr;
-$(button#uploadInstrBtn).onClick = function(){
-	// instructions file is only read once, during this function call
-	// global instructions array is initialized using that file read
-	var instrFileName = self#filePathField.text;
-	var instrsStr = view.uploadInstructionsFile(instrFileName); // pass some attributes and value
-	if (instrsStr === ""){
-		self#instrctnsCell.text = "Your file name is empty!";
-	} else {
-		globalInstrArr = instrsStr.split('X');
-		
-		// -1 in iterator so exit instruction isn't printed
-		for (var i = 0; i < globalInstrArr.length - 1; i++){
-			instrIdStr = "instrLine_".concat(i.toString());
-			self#instrctnsCell.$append(<div id={instrIdStr} class="cellLine"><font color="blue">{i}: </font>{globalInstrArr[i]}</div><br>);
-		}
-	}
+var uploadInstrBtn = $(button#uploadInstrBtn);
+uploadInstrBtn.on("click", uploadInstructions);
 
-	// have instructions automatically show up in DRAM cell
+
+$(button#prgrmRefrshBtn).onClick = function(){
+	var __ = view.refreshProgram();
+	uploadInstructions();
+	refreshRegs();
 	refreshDram();
+	refreshSpad();
+	refreshCache();
+	updateClock();
 };
 
 $(button#saveProgStateBtn).onClick = function(){
@@ -246,21 +261,28 @@ $(button#runInstrs).onClick = function(){
   numSteps = numSteps.concat(cacheBool);
   numSteps = numSteps.concat(pipeBool);
   
-  var __ = view.runInstsructionsFor(numSteps); // return is junk
-  var instrFileName = self#filePathField.text
-  var allInstructions = view.uploadInstructionsFile(instrFileName);
-  var instrctnsArr = allInstructions.split('X');
-  var numSteps1 = self#numStepsToRun.text;
-  self#instrctnsCell.text = "";
+  var curInstr = view.runInstsructionsFor(numSteps); // return is junk
+  var curInstrInt = curInstr.toInteger();
   
-  // -1 in iterator there so exit instruction isn't printed
-  for (var i = 0; i < instrctnsArr.length - 1; i++){
-	if( 0 <= i && i < numSteps1){
-		self#instrctnsCell.$append(<font color="blue">{i}: </font><font color="green">{instrctnsArr[i]}</font><br>);
-	} else {
-		self#instrctnsCell.$append(<font color="blue">{i}: </font>{instrctnsArr[i]}<br>);
+	// instruction coloring
+	for (var i = 0; i < globalInstrArr.length - 1; i++){
+		instrIdStr = "instrLine_".concat(i.toString());
+		var tmpStr = "div[id=".concat(instrIdStr);
+		var instrLineID = tmpStr.concat("]");
+		var instrLine = self.select(instrLineID);
+		
+		if( 0 <= i && i < curInstrInt + 1){ // this  +1 should be handled in cpp
+			instrLine.$content(<font color="blue">{i}: </font><font color="green">{globalInstrArr[i]}</font>);
+		} else {
+			instrLine.$content(<font color="blue">{i}: </font>{globalInstrArr[i]});
+		}
 	}
-  }
+	
+	 // update all non-control panels
+  refreshRegs();
+  refreshDram();
+  refreshSpad();
+  refreshCache();
   updateClock();
 };
 
